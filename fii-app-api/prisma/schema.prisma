@@ -14,28 +14,30 @@ datasource db {
 }
 
 model User {
-  id         Int       @id @default(autoincrement())
-  first_name String    @default("")
-  last_name  String    @default("")
-  is_student Boolean   @default(true)
-  email      String    @unique @default("")
-  password   String    @default("")
-  Student    Student[]
-  Teacher    Teacher[]
+  id         Int      @id @default(autoincrement())
+  first_name String   @default("")
+  last_name  String   @default("")
+  is_teacher Boolean  @default(false)
+  email      String   @unique
+  password   String
+  Student    Student?
+  Teacher    Teacher?
 }
 
 model Student {
   id         Int    @id @default(autoincrement())
-  student_id Int
-  user       User   @relation(fields: [student_id], references: [id])
+  user_id    Int    @unique
+  student_id Int    @unique
+  user       User   @relation(fields: [user_id], references: [id])
   year       Int
   group      String
 }
 
 model Teacher {
-  id      Int    @id @default(autoincrement())
-  user_id Int
-  user    User   @relation(fields: [user_id], references: [id])
-  subject String
-  degree  String
+  id         Int    @id @default(autoincrement())
+  user_id    Int    @unique
+  teacher_id Int    @unique
+  user       User   @relation(fields: [user_id], references: [id])
+  subject    String
+  degree     String
 }

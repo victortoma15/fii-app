@@ -46,13 +46,21 @@ const Login: React.FC<LoginProps> = ({onLoginSuccess}) => {
       console.log('Login successful, received data:', data);
       const token = data.token;
 
-      // Save the token securely (e.g., AsyncStorage)
-
       onLoginSuccess(); // Call the success callback
       Alert.alert('Login successful');
     } catch (error: any) {
       console.error('Login error:', error);
-      Alert.alert('Error', error.message || 'An error occurred');
+      let errorMessage = 'An error occurred';
+      if (error.message.includes('400')) {
+        errorMessage = 'Invalid request. Please check your input.';
+      } else if (error.message.includes('401')) {
+        errorMessage = 'Wrong password\nCheck your password and try again';
+      } else if (error.message.includes('404')) {
+        errorMessage = 'User not found. Please check your email.';
+      } else if (error.message.includes('500')) {
+        errorMessage = 'Server error. Please try again later.';
+      }
+      Alert.alert('Error', errorMessage);
     }
   };
 

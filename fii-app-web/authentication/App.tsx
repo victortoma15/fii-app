@@ -1,20 +1,29 @@
 import React, {useState} from 'react';
 import {SafeAreaView, StyleSheet} from 'react-native';
 import Login from './Login';
+import Register from './Register';
 import AuthenticatedScreen from './authScreen';
 
 function App(): React.JSX.Element {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
+  const [isRegistered, setIsRegistered] = useState(false);
 
-  // Function to toggle login state
   const handleLoginSuccess = () => {
     setIsLoggedIn(true);
+  };
+
+  const handleRegisterSuccess = () => {
+    setIsRegistered(true);
   };
 
   return (
     <SafeAreaView style={styles.root}>
       {!isLoggedIn ? (
-        <Login onLoginSuccess={handleLoginSuccess} />
+        !isRegistered ? (
+          <Register onRegisterSuccess={handleRegisterSuccess} />
+        ) : (
+          <Login onLoginSuccess={handleLoginSuccess} />
+        )
       ) : (
         <AuthenticatedScreen />
       )}

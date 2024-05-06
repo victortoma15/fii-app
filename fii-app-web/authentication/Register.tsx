@@ -1,76 +1,160 @@
 import React, {useState} from 'react';
 import {
-  SafeAreaView,
+  View,
+  TextInput,
+  Switch,
+  Button,
   StyleSheet,
   Text,
-  TextInput,
-  Button,
   Alert,
 } from 'react-native';
-import {CheckBox} from 'react-native-elements';
+import CustomButton from './customButton';
 
-function Register(): React.JSX.Element {
+interface RegisterProps {
+  onRegisterSuccess: () => void; // Callback for successful registration
+}
+
+const Register: React.FC<RegisterProps> = ({onRegisterSuccess}) => {
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
-  const [isStudent, setIsStudent] = useState(false);
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isTeacher, setIsTeacher] = useState(false);
+  const [studentId, setStudentId] = useState('');
+  const [year, setYear] = useState('');
+  const [group, setGroup] = useState('');
+  const [teacherId, setTeacherId] = useState('');
+  const [subject, setSubject] = useState('');
+  const [degree, setDegree] = useState('');
 
-  const handleRegister = () => {
-    // Here you can handle the registration logic (e.g., validation, API calls, etc.)
-    Alert.alert(
-      `First Name: ${firstName}, Last Name: ${lastName}, Is Student: ${isStudent}, Email: ${email}, Password: ${password}`,
-    );
+  const handleRegister = async () => {
+    const userData = {
+      firstName,
+      lastName,
+      email,
+      password,
+      isTeacher,
+      ...(isTeacher ? {teacherId, subject, degree} : {studentId, year, group}),
+    };
+
+    console.log('Attempting to register:', userData);
+
+    try {
+      const response = await fetch('http://192.168.1.16:3000/register', {
+        method: 'POST',
+        headers: {'Content-Type': 'application/json'},
+        body: JSON.stringify(userData),
+      });
+
+      if (!response.ok) {
+        const errorText = await response.text();
+        throw new Error(`Server responded with status: ${response.status}`);
+      }
+
+      const data = await response.json();
+      Alert.alert('Success', data.message, [
+        {text: 'OK', onPress: onRegisterSuccess}, // This will switch to the login screen
+      ]);
+    } catch (error) {
+      console.error('Registration failed:', error);
+      Alert.alert(
+        'Registration Error',
+        'Failed to register. Please try again.',
+      );
+    }
   };
 
   return (
-    <SafeAreaView style={styles.root}>
-      <Text style={styles.title}>Registration</Text>
+    <View style={styles.container}>
+      <Text style={styles.header}>Register</Text>
       <TextInput
         style={styles.input}
-        onChangeText={setFirstName}
         value={firstName}
+        onChangeText={setFirstName}
         placeholder="First Name"
-        autoCapitalize="words"
       />
       <TextInput
         style={styles.input}
-        onChangeText={setLastName}
         value={lastName}
+        onChangeText={setLastName}
         placeholder="Last Name"
-        autoCapitalize="words"
       />
-      <CheckBox checked={isStudent} />
-      <Text>Are you a student?</Text>
       <TextInput
         style={styles.input}
-        onChangeText={setEmail}
         value={email}
+        onChangeText={setEmail}
         placeholder="Email"
-        autoCapitalize="none"
       />
       <TextInput
         style={styles.input}
-        onChangeText={setPassword}
         value={password}
+        onChangeText={setPassword}
         placeholder="Password"
         secureTextEntry
       />
-      <Button title="Register" onPress={handleRegister} />
-    </SafeAreaView>
+      <View style={styles.switchContainer}>
+        <Text style={styles.switchLabel}>Are you a teacher?</Text>
+        <Switch value={isTeacher} onValueChange={setIsTeacher} />
+      </View>
+      {isTeacher ? (
+        <>
+          <TextInput
+            style={styles.input}
+            value={teacherId}
+            onChangeText={setTeacherId}
+            placeholder="Teacher ID"
+          />
+          <TextInput
+            style={styles.input}
+            value={subject}
+            onChangeText={setSubject}
+            placeholder="Subject"
+          />
+          <TextInput
+            style={styles.input}
+            value={degree}
+            onChangeText={setDegree}
+            placeholder="Degree"
+          />
+        </>
+      ) : (
+        <>
+          <TextInput
+            style={styles.input}
+            value={studentId}
+            onChangeText={setStudentId}
+            placeholder="Student ID"
+          />
+          <TextInput
+            style={styles.input}
+            value={year}
+            onChangeText={setYear}
+            placeholder="Year"
+          />
+          <TextInput
+            style={styles.input}
+            value={group}
+            onChangeText={setGroup}
+            placeholder="Group"
+          />
+        </>
+      )}
+      <CustomButton title="Register" onPress={handleRegister} />
+    </View>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  root: {
+  container: {
     flex: 1,
     justifyContent: 'center',
     padding: 16,
   },
-  title: {
+  header: {
     fontSize: 24,
     fontWeight: 'bold',
     marginBottom: 20,
+    textAlign: 'center',
   },
   input: {
     height: 40,
@@ -78,6 +162,16 @@ const styles = StyleSheet.create({
     borderWidth: 1,
     marginBottom: 10,
     paddingLeft: 8,
+    borderRadius: 15,
+  },
+  switchContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 20,
+    justifyContent: 'space-between',
+  },
+  switchLabel: {
+    fontSize: 16,
   },
 });
 
