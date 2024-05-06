@@ -34,7 +34,17 @@ const Register: React.FC<RegisterProps> = ({onRegisterSuccess}) => {
       email,
       password,
       isTeacher,
-      ...(isTeacher ? {teacherId, subject, degree} : {studentId, year, group}),
+      ...(isTeacher
+        ? {
+            user_id: teacherId, // Changed from teacherId to user_id
+            subject,
+            degree,
+          }
+        : {
+            user_id: studentId, // Changed from studentId to user_id
+            year: parseInt(year, 10), // Make sure year is a number
+            group,
+          }),
     };
 
     console.log('Attempting to register:', userData);

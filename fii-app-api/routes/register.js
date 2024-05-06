@@ -24,16 +24,17 @@ router.post("/", async (req, res) => {
                 ...(isTeacher ? {
                     Teacher: {
                         create: {
+                            teacher_id: parseInt(user_id, 10),
                             subject: subject,
-                            degree: degree
+                            degree: degree,
                         }
                     }
                 } : {
                     Student: {
                         create: {
-                            user_id: parseInt(user_id, 10),
+                            student_id: parseInt(user_id, 10),
                             year: parseInt(year, 10),
-                            group: group
+                            group: group,
                         }
                     }
                 })
