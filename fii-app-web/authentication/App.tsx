@@ -2,30 +2,42 @@ import React, {useState} from 'react';
 import {SafeAreaView, StyleSheet} from 'react-native';
 import Login from './Login';
 import Register from './Register';
-import AuthenticatedScreen from './authScreen';
+import Dashboard from './Dashboard'; // Import Dashboard
 
 function App(): React.JSX.Element {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
+  const [isRegistrationComplete, setIsRegistrationComplete] = useState(false);
+  const [userFirstName, setUserFirstName] = useState(''); // Add state for user's first name
 
-  const handleLoginSuccess = () => {
+  const handleLoginSuccess = (firstName: string) => {
+    // Receive user's first name
     setIsLoggedIn(true);
+    setUserFirstName(firstName); // Set user's first name
   };
 
-  const handleRegisterSuccess = () => {
+  const handleRegisterPress = () => {
     setIsRegistered(true);
+  };
+
+  const handleRegistrationSuccess = () => {
+    setIsRegistered(false);
+    setIsRegistrationComplete(true);
   };
 
   return (
     <SafeAreaView style={styles.root}>
       {!isLoggedIn ? (
         !isRegistered ? (
-          <Register onRegisterSuccess={handleRegisterSuccess} />
+          <Login
+            onLoginSuccess={handleLoginSuccess}
+            onRegisterPress={handleRegisterPress}
+          />
         ) : (
-          <Login onLoginSuccess={handleLoginSuccess} />
+          <Register onRegisterSuccess={handleRegistrationSuccess} />
         )
       ) : (
-        <AuthenticatedScreen />
+        <Dashboard firstName={userFirstName} /> // Pass user's first name as prop
       )}
     </SafeAreaView>
   );

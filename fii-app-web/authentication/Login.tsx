@@ -12,10 +12,11 @@ import {
 import CustomButton from './customButton';
 
 interface LoginProps {
-  onLoginSuccess: () => void;
+  onLoginSuccess: (firstName: string) => void;
+  onRegisterPress: () => void;
 }
 
-const Login: React.FC<LoginProps> = ({onLoginSuccess}) => {
+const Login: React.FC<LoginProps> = ({onLoginSuccess, onRegisterPress}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
 
@@ -43,11 +44,11 @@ const Login: React.FC<LoginProps> = ({onLoginSuccess}) => {
       }
 
       const data = await response.json();
+      const {firstName} = data;
       console.log('Login successful, received data:', data);
       const token = data.token;
 
-      onLoginSuccess(); // Call the success callback
-      Alert.alert('Login successful');
+      onLoginSuccess(firstName); // Call the success callback
     } catch (error: any) {
       console.error('Login error:', error);
       let errorMessage = 'An error occurred';
@@ -83,6 +84,7 @@ const Login: React.FC<LoginProps> = ({onLoginSuccess}) => {
         secureTextEntry
       />
       <CustomButton title="Login" onPress={handleLogin} />
+      <CustomButton title="Enroll" onPress={onRegisterPress} />
     </SafeAreaView>
   );
 };

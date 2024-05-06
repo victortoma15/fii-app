@@ -76,7 +76,7 @@ const Register: React.FC<RegisterProps> = ({onRegisterSuccess}) => {
 
   return (
     <View style={styles.container}>
-      <Text style={styles.header}>Register</Text>
+      <Text style={styles.header}>Enroll your account</Text>
       <TextInput
         style={styles.input}
         value={firstName}
@@ -149,7 +149,7 @@ const Register: React.FC<RegisterProps> = ({onRegisterSuccess}) => {
           />
         </>
       )}
-      <CustomButton title="Register" onPress={handleRegister} />
+      <CustomButton title="Enroll" onPress={handleRegister} />
     </View>
   );
 };
