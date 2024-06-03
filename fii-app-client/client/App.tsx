@@ -1,19 +1,43 @@
 import React, {useState} from 'react';
 import {SafeAreaView, StyleSheet} from 'react-native';
+import {GoogleSignin} from '@react-native-google-signin/google-signin';
 import Login from './Login';
 import Register from './Register';
-import Dashboard from './Dashboard'; // Import Dashboard
+import Dashboard from './Dashboard';
+
+GoogleSignin.configure({
+  webClientId:
+    '201716262857-v92c4r7f2bc9t9dv81r8lt4p3q1g9k4e.apps.googleusercontent.com',
+  offlineAccess: true,
+  scopes: ['https://www.googleapis.com/auth/calendar'],
+});
 
 function App(): React.JSX.Element {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
   const [isRegistrationComplete, setIsRegistrationComplete] = useState(false);
-  const [userFirstName, setUserFirstName] = useState(''); // Add state for user's first name
+  const [userFirstName, setUserFirstName] = useState('');
+  const [userLastName, setUserLastName] = useState('');
+  const [teacherId, setTeacherId] = useState<number | null>(null);
+  const [role, setRole] = useState<string>('');
+  const [year, setYear] = useState<number | null>(null);
+  const [group, setGroup] = useState<string | null>(null);
 
-  const handleLoginSuccess = (firstName: string) => {
-    // Receive user's first name
+  const handleLoginSuccess = (
+    firstName: string,
+    lastName: string,
+    teacherId: number | null,
+    role: string,
+    year: number | null,
+    group: string | null,
+  ) => {
     setIsLoggedIn(true);
-    setUserFirstName(firstName); // Set user's first name
+    setUserFirstName(firstName);
+    setUserLastName(lastName);
+    setTeacherId(teacherId);
+    setRole(role);
+    setYear(year);
+    setGroup(group);
   };
 
   const handleRegisterPress = () => {
@@ -23,6 +47,16 @@ function App(): React.JSX.Element {
   const handleRegistrationSuccess = () => {
     setIsRegistered(false);
     setIsRegistrationComplete(true);
+  };
+
+  const handleLogout = () => {
+    setIsLoggedIn(false);
+    setUserFirstName('');
+    setUserLastName('');
+    setTeacherId(null);
+    setRole('');
+    setYear(null);
+    setGroup(null);
   };
 
   return (
@@ -37,7 +71,15 @@ function App(): React.JSX.Element {
           <Register onRegisterSuccess={handleRegistrationSuccess} />
         )
       ) : (
-        <Dashboard firstName={userFirstName} /> // Pass user's first name as prop
+        <Dashboard
+          firstName={userFirstName}
+          lastName={userLastName}
+          teacherId={teacherId}
+          role={role}
+          year={year}
+          group={group}
+          onLogout={handleLogout}
+        />
       )}
     </SafeAreaView>
   );

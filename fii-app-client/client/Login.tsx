@@ -1,18 +1,23 @@
-// Login.tsx
 import React, {useState} from 'react';
 import {
   SafeAreaView,
   StyleSheet,
   Text,
   TextInput,
-  Button,
   Alert,
   Image,
 } from 'react-native';
 import CustomButton from './customButton';
 
 interface LoginProps {
-  onLoginSuccess: (firstName: string) => void;
+  onLoginSuccess: (
+    firstName: string,
+    lastName: string,
+    teacherId: number | null,
+    role: string,
+    year: number | null,
+    group: string | null,
+  ) => void;
   onRegisterPress: () => void;
 }
 
@@ -44,11 +49,10 @@ const Login: React.FC<LoginProps> = ({onLoginSuccess, onRegisterPress}) => {
       }
 
       const data = await response.json();
-      const {firstName} = data;
+      const {firstName, lastName, teacherId, role, year, group} = data;
       console.log('Login successful, received data:', data);
-      const token = data.token;
 
-      onLoginSuccess(firstName); // Call the success callback
+      onLoginSuccess(firstName, lastName, teacherId, role, year, group); // Call the success callback with role
     } catch (error: any) {
       console.error('Login error:', error);
       let errorMessage = 'An error occurred';

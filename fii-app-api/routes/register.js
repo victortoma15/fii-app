@@ -8,7 +8,7 @@ const prisma = new PrismaClient();
 router.post("/", async (req, res) => {
     const {
         firstName, lastName, email, password, isTeacher,
-        user_id, year, group, subject, degree
+        user_id, year, group, subject_id, degree
     } = req.body;
 
     try {
@@ -25,7 +25,7 @@ router.post("/", async (req, res) => {
                     Teacher: {
                         create: {
                             teacher_id: parseInt(user_id, 10),
-                            subject: subject,
+                            subject_id: parseInt(subject_id, 10),
                             degree: degree,
                         }
                     }

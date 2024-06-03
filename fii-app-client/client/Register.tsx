@@ -1,13 +1,5 @@
 import React, {useState} from 'react';
-import {
-  View,
-  TextInput,
-  Switch,
-  Button,
-  StyleSheet,
-  Text,
-  Alert,
-} from 'react-native';
+import {View, TextInput, Switch, Alert, StyleSheet, Text} from 'react-native';
 import CustomButton from './customButton';
 
 interface RegisterProps {
@@ -24,7 +16,7 @@ const Register: React.FC<RegisterProps> = ({onRegisterSuccess}) => {
   const [year, setYear] = useState('');
   const [group, setGroup] = useState('');
   const [teacherId, setTeacherId] = useState('');
-  const [subject, setSubject] = useState('');
+  const [subjectId, setSubjectId] = useState(''); // Updated to subjectId
   const [degree, setDegree] = useState('');
 
   const handleRegister = async () => {
@@ -37,7 +29,7 @@ const Register: React.FC<RegisterProps> = ({onRegisterSuccess}) => {
       ...(isTeacher
         ? {
             user_id: teacherId, // Changed from teacherId to user_id
-            subject,
+            subject_id: subjectId, // Changed from subject to subject_id
             degree,
           }
         : {
@@ -116,9 +108,9 @@ const Register: React.FC<RegisterProps> = ({onRegisterSuccess}) => {
           />
           <TextInput
             style={styles.input}
-            value={subject}
-            onChangeText={setSubject}
-            placeholder="Subject"
+            value={subjectId}
+            onChangeText={setSubjectId}
+            placeholder="Subject ID" // Updated to Subject ID
           />
           <TextInput
             style={styles.input}

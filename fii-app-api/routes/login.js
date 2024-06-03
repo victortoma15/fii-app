@@ -9,43 +9,45 @@ const prisma = new PrismaClient();
 
 router.post("/", async (req, res) => {
     const { email, password } = req.body;
-    console.log('Received login request for email:', email.trim()); // Ensure to log trimmed email for consistency
+    console.log('Received login request for email:', email.trim());
 
     try {
         const user = await prisma.user.findUnique({
-            where: { email: email.trim() }  // Ensure email is trimmed to remove any extra spaces
+            where: { email: email.trim() },
+            include: { Student: true }
         });
 
         if (!user) {
-            console.log('No user found for email:', email.trim());  // Log trimmed email in case not found
+            console.log('No user found for email:', email.trim());
             return res.status(404).json({ message: "User not found" });
         }
 
-        console.log('Stored hash:', user.password); // Log the stored hash for debugging
-        const isPasswordValid = await bcrypt.compare(password.trim(), user.password);  // Also trim the password input
-        console.log('Password valid:', isPasswordValid);  // Log the result of the password comparison
+        console.log('Stored hash:', user.password);
+        const isPasswordValid = await bcrypt.compare(password.trim(), user.password);
+        console.log('Password valid:', isPasswordValid);
 
         if (!isPasswordValid) {
-            console.log('Failed login attempt for email:', email.trim());  // Log failed attempt details
+            console.log('Failed login attempt for email:', email.trim());
             return res.status(401).json({ message: "Invalid password" });
         }
-        
+
         const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
-        console.log('Token generated for user:', user.id);  // Log token generation for the user
+        console.log('Token generated for user:', user.id);
+
         res.status(200).json({
-             token,
-             firstName: user.first_name,
-            });
+            token,
+            firstName: user.first_name,
+            lastName: user.last_name,
+            fullName: `${user.first_name} ${user.last_name}`,
+            teacherId: user.is_teacher ? user.id : null,
+            role: user.is_teacher ? 'teacher' : 'student',
+            year: user.Student ? user.Student.year : null,
+            group: user.Student ? user.Student.group : null
+        });
     } catch (error) {
         console.error("Error logging in:", error);
         res.status(500).json({ message: "Internal server error" });
     }
-});
-
-// Add general error handler to express to catch any unhandled errors
-router.use((err, req, res, next) => {
-    console.error('Unhandled error in login route:', err);
-    res.status(500).json({ error: 'Internal Server Error' });
 });
 
 module.exports = router;

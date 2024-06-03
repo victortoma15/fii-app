@@ -1,9 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
-// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
-// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -25,19 +19,54 @@ model User {
 }
 
 model Student {
-  id         Int    @id @default(autoincrement())
-  user_id    Int    @unique
-  student_id Int    @unique
-  user       User   @relation(fields: [user_id], references: [id])
+  id         Int              @id @default(autoincrement())
+  user_id    Int              @unique
+  student_id Int              @unique
+  user       User             @relation(fields: [user_id], references: [id])
   year       Int
   group      String
+  subjects   StudentSubject[]
+  grades     Grade[]
 }
 
 model Teacher {
-  id         Int    @id @default(autoincrement())
-  user_id    Int    @unique
-  teacher_id Int    @unique
-  user       User   @relation(fields: [user_id], references: [id])
-  subject    String
+  id         Int     @id @default(autoincrement())
+  user_id    Int     @unique
+  teacher_id Int     @unique
+  user       User    @relation(fields: [user_id], references: [id])
+  subject_id Int
   degree     String
+  subject    Subject @relation(fields: [subject_id], references: [id], name: "TeacherSubjects")
+  grades     Grade[]
+}
+
+model Subject {
+  id         Int              @id @default(autoincrement())
+  subject_id Int              @unique
+  name       String
+  credits    Int
+  year       Int
+  teachers   Teacher[]        @relation("TeacherSubjects")
+  students   StudentSubject[]
+  grades     Grade[]
+}
+
+model StudentSubject {
+  student_id Int
+  subject_id Int
+  student    Student @relation(fields: [student_id], references: [id])
+  subject    Subject @relation(fields: [subject_id], references: [id])
+
+  @@id([student_id, subject_id])
+}
+
+model Grade {
+  id         Int     @id @default(autoincrement())
+  grade      Int     @default(0)
+  student_id Int
+  subject_id Int
+  teacher_id Int
+  student    Student @relation(fields: [student_id], references: [id])
+  subject    Subject @relation(fields: [subject_id], references: [id])
+  teacher    Teacher @relation(fields: [teacher_id], references: [id])
 }
