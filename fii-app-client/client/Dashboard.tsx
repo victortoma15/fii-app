@@ -1,4 +1,4 @@
-import React, {useState} from 'react';
+import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
@@ -6,10 +6,11 @@ import {
   TouchableOpacity,
   Image,
   Alert,
+  BackHandler,
 } from 'react-native';
 import Timetable from './Timetable';
-import Catalog from './Catalog'; // Import Catalog
-import Classbook from './Classbook'; // Import Classbook
+import Catalog from './Catalog';
+import Classbook from './Classbook';
 
 type DashboardProps = {
   firstName: string;
@@ -18,6 +19,7 @@ type DashboardProps = {
   role: string;
   year: number | null;
   group: string | null;
+  studentId: number | null; // Added studentId
   onLogout: () => void;
 };
 
@@ -28,54 +30,85 @@ const Dashboard: React.FC<DashboardProps> = ({
   role,
   year,
   group,
+  studentId, // Added studentId
   onLogout,
 }) => {
   const [view, setView] = useState<
     'dashboard' | 'timetable' | 'catalog' | 'classbook'
   >('dashboard');
 
-  const handleTimetablePress = () => {
-    setView('timetable');
-  };
+  useEffect(() => {
+    const backAction = () => {
+      if (view !== 'dashboard') {
+        setView('dashboard');
+        return true;
+      }
+      return false;
+    };
+
+    const backHandler = BackHandler.addEventListener(
+      'hardwareBackPress',
+      backAction,
+    );
+
+    return () => backHandler.remove();
+  }, [view]);
 
   const handleCatalogPress = () => {
-    if (role !== 'teacher') {
-      Alert.alert('Access Denied', 'Only teachers can access the catalog.');
-      return;
+    if (role === 'teacher') {
+      setView('catalog');
+    } else if (role === 'student') {
+      setView('classbook');
+    } else {
+      Alert.alert('Access Denied', 'Unauthorized access.');
     }
-    setView('catalog');
   };
 
-  const handleClassbookPress = () => {
-    if (role !== 'student') {
-      Alert.alert('Access Denied', 'Only students can access the classbook.');
-      return;
-    }
-    setView('classbook');
-  };
+  const handleLogoutPress = () => {
+    Alert.alert(
+      'Confirm Logout',
+      'Are you sure you want to logout?',
+      [
+        {
+          text: 'Yes',
+          onPress: async () => {
+            try {
+              const response = await fetch('http://10.0.2.2:3000/logout', {
+                method: 'POST',
+                headers: {'Content-Type': 'application/json'},
+              });
 
-  const handleLogoutPress = async () => {
-    try {
-      const response = await fetch('http://10.0.2.2:3000/logout', {
-        method: 'POST',
-        headers: {'Content-Type': 'application/json'},
-      });
+              if (!response.ok) {
+                throw new Error('Failed to logout');
+              }
 
-      if (!response.ok) {
-        throw new Error('Failed to logout');
-      }
-
-      Alert.alert('Success', 'Logged out successfully', [
-        {text: 'OK', onPress: onLogout},
-      ]);
-    } catch (error) {
-      console.error('Logout failed:', error);
-      Alert.alert('Logout Error', 'Failed to logout. Please try again.');
-    }
+              onLogout();
+            } catch (error) {
+              console.error('Logout failed:', error);
+              Alert.alert(
+                'Logout Error',
+                'Failed to logout. Please try again.',
+              );
+            }
+          },
+        },
+        {
+          text: 'No',
+          style: 'cancel',
+        },
+      ],
+      {cancelable: false},
+    );
   };
 
   return (
     <View style={styles.container}>
+      <TouchableOpacity style={styles.logoutButton} onPress={handleLogoutPress}>
+        <Image
+          style={styles.logoutIcon}
+          source={require('./assets/logout.png')}
+        />
+      </TouchableOpacity>
       {view === 'dashboard' ? (
         <>
           <Image style={styles.image} source={require('./assets/fii.png')} />
@@ -93,7 +126,7 @@ const Dashboard: React.FC<DashboardProps> = ({
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.button}
-              onPress={handleTimetablePress}>
+              onPress={() => setView('timetable')}>
               <Image
                 style={styles.buttonIcon}
                 source={require('./assets/timetable.png')}
@@ -111,14 +144,6 @@ const Dashboard: React.FC<DashboardProps> = ({
                 source={require('./assets/chat.png')}
               />
             </TouchableOpacity>
-            <TouchableOpacity
-              style={styles.button}
-              onPress={handleClassbookPress}>
-              <Text>Classbook</Text>
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button} onPress={handleLogoutPress}>
-              <Text style={styles.logoutText}>Logout</Text>
-            </TouchableOpacity>
           </View>
         </>
       ) : view === 'catalog' ? (
@@ -131,7 +156,7 @@ const Dashboard: React.FC<DashboardProps> = ({
         <Classbook
           visible={true}
           onClose={() => setView('dashboard')}
-          studentId={teacherId!}
+          studentId={studentId!} // Pass correct studentId
           studentName={`${firstName} ${lastName}`}
           year={year!}
           group={group!}
@@ -148,6 +173,16 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  logoutButton: {
+    position: 'absolute',
+    top: 40,
+    right: 20,
+    zIndex: 1,
+  },
+  logoutIcon: {
+    width: 24,
+    height: 24,
   },
   text: {
     fontSize: 18,
@@ -171,10 +206,6 @@ const styles = StyleSheet.create({
   buttonIcon: {
     width: 40,
     height: 40,
-  },
-  logoutText: {
-    fontSize: 16,
-    color: 'red',
   },
 });
 

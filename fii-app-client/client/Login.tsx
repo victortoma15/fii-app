@@ -17,6 +17,7 @@ interface LoginProps {
     role: string,
     year: number | null,
     group: string | null,
+    studentId: number | null, // Ensure studentId is passed
   ) => void;
   onRegisterPress: () => void;
 }
@@ -49,10 +50,19 @@ const Login: React.FC<LoginProps> = ({onLoginSuccess, onRegisterPress}) => {
       }
 
       const data = await response.json();
-      const {firstName, lastName, teacherId, role, year, group} = data;
+      const {firstName, lastName, teacherId, role, year, group, studentId} =
+        data;
       console.log('Login successful, received data:', data);
 
-      onLoginSuccess(firstName, lastName, teacherId, role, year, group); // Call the success callback with role
+      onLoginSuccess(
+        firstName,
+        lastName,
+        teacherId,
+        role,
+        year,
+        group,
+        studentId,
+      ); // Ensure studentId is passed
     } catch (error: any) {
       console.error('Login error:', error);
       let errorMessage = 'An error occurred';

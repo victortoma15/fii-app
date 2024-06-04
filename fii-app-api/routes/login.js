@@ -40,6 +40,7 @@ router.post("/", async (req, res) => {
             lastName: user.last_name,
             fullName: `${user.first_name} ${user.last_name}`,
             teacherId: user.is_teacher ? user.id : null,
+            studentId: user.Student ? user.Student.id : null, // Ensure studentId is included
             role: user.is_teacher ? 'teacher' : 'student',
             year: user.Student ? user.Student.year : null,
             group: user.Student ? user.Student.group : null

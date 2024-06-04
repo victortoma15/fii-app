@@ -85,6 +85,12 @@ const Classbook: React.FC<ClassbookProps> = ({
     );
   };
 
+  const calculateAverage = () => {
+    if (grades.length === 0) return 0;
+    const total = grades.reduce((acc, grade) => acc + grade.grade, 0);
+    return (total / grades.length).toFixed(2);
+  };
+
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
       <View style={styles.modalContainer}>
@@ -92,6 +98,9 @@ const Classbook: React.FC<ClassbookProps> = ({
         <Text style={styles.studentInfo}>{studentName}</Text>
         <Text style={styles.studentInfo}>
           Year: {year} | Group: {group}
+        </Text>
+        <Text style={styles.averageText}>
+          General Average: {calculateAverage()}
         </Text>
         <View style={styles.buttonContainer}>
           {grades.map(grade => (
@@ -125,6 +134,11 @@ const styles = StyleSheet.create({
   studentInfo: {
     fontSize: 18,
     marginBottom: 10,
+  },
+  averageText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 20,
   },
   buttonContainer: {
     flexDirection: 'row',
