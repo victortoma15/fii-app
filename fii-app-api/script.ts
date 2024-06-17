@@ -14,6 +14,8 @@ const addGradeRouter = require('./routes/addGrade') as express.Router;
 const getGradesRouter = require('./routes/getGrades') as express.Router;
 const getStudentsByYearRouter = require('./routes/getStudentsByYear') as express.Router; // Add this line
 const getTeacherDetailsRouter = require('./routes/getTeacherDetails') as express.Router; // Add this line
+const materialsRouter = require('./routes/materials') as express.Router;
+const subjectsRouter = require('./routes/subjects') as express.Router;
 
 const prisma = new PrismaClient();
 const app = express();
@@ -30,6 +32,13 @@ app.use('/addGrade', addGradeRouter);
 app.use('/getGrades', getGradesRouter);
 app.use('/studentsByYear', getStudentsByYearRouter); // Add this line
 app.use('/teacher', getTeacherDetailsRouter); // Add this line
+app.use('/materials', materialsRouter);
+app.use('/subjects', subjectsRouter);
+
+app.use((req, res, next) => {
+  console.log(`${req.method} ${req.path}`);
+  next();
+});
 
 app.post('/', async (req, res) => {
   try {
@@ -39,11 +48,6 @@ app.post('/', async (req, res) => {
     console.error('Error fetching users:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
-});
-
-app.use((req, res, next) => {
-  console.log(`${req.method} ${req.path}`);
-  next();
 });
 
 app.listen(port, () => {

@@ -11,6 +11,8 @@ import {
 import Timetable from './Timetable';
 import Catalog from './Catalog';
 import Classbook from './Classbook';
+import Materials from './Materials';
+import TeacherMaterials from './TeacherMaterials';
 
 type DashboardProps = {
   firstName: string;
@@ -21,6 +23,7 @@ type DashboardProps = {
   group: string | null;
   studentId: number | null; // Added studentId
   onLogout: () => void;
+  subjectId: number | null; // Added subjectId
 };
 
 const Dashboard: React.FC<DashboardProps> = ({
@@ -32,9 +35,15 @@ const Dashboard: React.FC<DashboardProps> = ({
   group,
   studentId, // Added studentId
   onLogout,
+  subjectId, // Added subjectId
 }) => {
   const [view, setView] = useState<
-    'dashboard' | 'timetable' | 'catalog' | 'classbook'
+    | 'dashboard'
+    | 'timetable'
+    | 'catalog'
+    | 'classbook'
+    | 'materials'
+    | 'teacherMaterials'
   >('dashboard');
 
   useEffect(() => {
@@ -61,6 +70,14 @@ const Dashboard: React.FC<DashboardProps> = ({
       setView('classbook');
     } else {
       Alert.alert('Access Denied', 'Unauthorized access.');
+    }
+  };
+
+  const handleMaterialsPress = () => {
+    if (role === 'teacher') {
+      setView('teacherMaterials');
+    } else {
+      setView('materials');
     }
   };
 
@@ -132,7 +149,9 @@ const Dashboard: React.FC<DashboardProps> = ({
                 source={require('./assets/timetable.png')}
               />
             </TouchableOpacity>
-            <TouchableOpacity style={styles.button}>
+            <TouchableOpacity
+              style={styles.button}
+              onPress={handleMaterialsPress}>
               <Image
                 style={styles.buttonIcon}
                 source={require('./assets/materials.png')}
@@ -161,8 +180,15 @@ const Dashboard: React.FC<DashboardProps> = ({
           year={year!}
           group={group!}
         />
+      ) : view === 'materials' ? (
+        <Materials
+          studentId={studentId}
+          year={year}
+          group={group}
+          subjectId={subjectId}
+        />
       ) : (
-        <Timetable />
+        <TeacherMaterials teacherId={teacherId} subjectId={subjectId} />
       )}
     </View>
   );

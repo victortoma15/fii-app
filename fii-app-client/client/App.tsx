@@ -18,8 +18,9 @@ function App(): React.JSX.Element {
   const [isRegistrationComplete, setIsRegistrationComplete] = useState(false);
   const [userFirstName, setUserFirstName] = useState('');
   const [userLastName, setUserLastName] = useState('');
-  const [studentId, setStudentId] = useState<number | null>(null); // Added studentId
+  const [studentId, setStudentId] = useState<number | null>(null);
   const [teacherId, setTeacherId] = useState<number | null>(null);
+  const [subjectId, setSubjectId] = useState<number | null>(null);
   const [role, setRole] = useState<string>('');
   const [year, setYear] = useState<number | null>(null);
   const [group, setGroup] = useState<string | null>(null);
@@ -31,16 +32,18 @@ function App(): React.JSX.Element {
     role: string,
     year: number | null,
     group: string | null,
-    studentId: number | null, // Ensure studentId is handled
+    studentId: number | null,
+    subjectId: number | null,
   ) => {
     setIsLoggedIn(true);
     setUserFirstName(firstName);
     setUserLastName(lastName);
-    setStudentId(studentId); // Set studentId
+    setStudentId(studentId);
     setTeacherId(teacherId);
     setRole(role);
     setYear(year);
     setGroup(group);
+    setSubjectId(subjectId);
   };
 
   const handleRegisterPress = () => {
@@ -60,6 +63,8 @@ function App(): React.JSX.Element {
     setRole('');
     setYear(null);
     setGroup(null);
+    setStudentId(null);
+    setSubjectId(null);
   };
 
   return (
@@ -77,12 +82,13 @@ function App(): React.JSX.Element {
         <Dashboard
           firstName={userFirstName}
           lastName={userLastName}
-          studentId={studentId} // Pass studentId
+          studentId={studentId}
           teacherId={teacherId}
           role={role}
           year={year}
           group={group}
           onLogout={handleLogout}
+          subjectId={subjectId}
         />
       )}
     </SafeAreaView>

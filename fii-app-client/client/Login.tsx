@@ -7,6 +7,7 @@ import {
   Alert,
   Image,
 } from 'react-native';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 import CustomButton from './customButton';
 
 interface LoginProps {
@@ -17,7 +18,8 @@ interface LoginProps {
     role: string,
     year: number | null,
     group: string | null,
-    studentId: number | null, // Ensure studentId is passed
+    studentId: number | null,
+    subjectId: number | null, // Ensure subjectId is passed
   ) => void;
   onRegisterPress: () => void;
 }
@@ -44,15 +46,26 @@ const Login: React.FC<LoginProps> = ({onLoginSuccess, onRegisterPress}) => {
 
       console.log('Response status:', response.status);
       if (!response.ok) {
-        const text = await response.text(); // Get text to avoid json parse error
+        const text = await response.text();
         console.error('Login failed, response:', text);
         throw new Error(`Server responded with status: ${response.status}`);
       }
 
       const data = await response.json();
-      const {firstName, lastName, teacherId, role, year, group, studentId} =
-        data;
+      const {
+        firstName,
+        lastName,
+        teacherId,
+        role,
+        year,
+        group,
+        studentId,
+        subjectId, // Ensure subjectId is included
+        token,
+      } = data;
       console.log('Login successful, received data:', data);
+
+      await AsyncStorage.setItem('authToken', token); // Store the token in AsyncStorage
 
       onLoginSuccess(
         firstName,
@@ -62,7 +75,8 @@ const Login: React.FC<LoginProps> = ({onLoginSuccess, onRegisterPress}) => {
         year,
         group,
         studentId,
-      ); // Ensure studentId is passed
+        subjectId, // Ensure subjectId is passed
+      );
     } catch (error: any) {
       console.error('Login error:', error);
       let errorMessage = 'An error occurred';

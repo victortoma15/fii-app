@@ -12,6 +12,7 @@ node_modules/
 # Prisma toolkit
 prisma/migrations/
 prisma/dev.db
+uploads/
 
 # Runtime data
 pids

@@ -8,14 +8,15 @@ datasource db {
 }
 
 model User {
-  id         Int      @id @default(autoincrement())
-  first_name String   @default("")
-  last_name  String   @default("")
-  is_teacher Boolean  @default(false)
-  email      String   @unique
+  id         Int        @id @default(autoincrement())
+  first_name String     @default("")
+  last_name  String     @default("")
+  is_teacher Boolean    @default(false)
+  email      String     @unique
   password   String
   Student    Student?
   Teacher    Teacher?
+  Material   Material[]
 }
 
 model Student {
@@ -49,6 +50,7 @@ model Subject {
   teachers   Teacher[]        @relation("TeacherSubjects")
   students   StudentSubject[]
   grades     Grade[]
+  Material   Material[]
 }
 
 model StudentSubject {
@@ -61,12 +63,28 @@ model StudentSubject {
 }
 
 model Grade {
-  id         Int     @id @default(autoincrement())
-  grade      Int     @default(0)
+  id         Int      @id @default(autoincrement())
+  grade      Int      @default(0)
   student_id Int
   subject_id Int
   teacher_id Int
-  student    Student @relation(fields: [student_id], references: [id])
-  subject    Subject @relation(fields: [subject_id], references: [id])
-  teacher    Teacher @relation(fields: [teacher_id], references: [id])
+  created_at DateTime @default(now()) // Add this line to store the date and time of grade creation
+  student    Student  @relation(fields: [student_id], references: [id])
+  subject    Subject  @relation(fields: [subject_id], references: [id])
+  teacher    Teacher  @relation(fields: [teacher_id], references: [id])
+}
+
+model Material {
+  id          Int      @id @default(autoincrement())
+  name        String
+  type        String
+  path        String
+  subject_id  Int
+  uploaded_by Int
+  approved    Boolean  @default(false)
+  created_at  DateTime @default(now())
+  category    String
+
+  subject  Subject @relation(fields: [subject_id], references: [id])
+  uploader User    @relation(fields: [uploaded_by], references: [id])
 }

@@ -21,6 +21,7 @@ type ClassbookProps = {
 type Grade = {
   grade: number;
   subject_id: number;
+  created_at: string;
   subject: {
     name: string;
   };
@@ -73,6 +74,7 @@ const Classbook: React.FC<ClassbookProps> = ({
     return (
       <View>
         <Text>Grade: {grade.grade}</Text>
+        <Text>Date: {new Date(grade.created_at).toLocaleDateString()}</Text>
         {grade.teacher && grade.teacher.user ? (
           <Text>
             Teacher: {grade.teacher.user.first_name}{' '}
