@@ -68,10 +68,12 @@ model Grade {
   student_id Int
   subject_id Int
   teacher_id Int
-  created_at DateTime @default(now()) // Add this line to store the date and time of grade creation
+  created_at DateTime @default(now())
   student    Student  @relation(fields: [student_id], references: [id])
   subject    Subject  @relation(fields: [subject_id], references: [id])
   teacher    Teacher  @relation(fields: [teacher_id], references: [id])
+
+  @@unique([student_id, subject_id, teacher_id])
 }
 
 model Material {
@@ -84,6 +86,7 @@ model Material {
   approved    Boolean  @default(false)
   created_at  DateTime @default(now())
   category    String
+  file_url    String
 
   subject  Subject @relation(fields: [subject_id], references: [id])
   uploader User    @relation(fields: [uploaded_by], references: [id])

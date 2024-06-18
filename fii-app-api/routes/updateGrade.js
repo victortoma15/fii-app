@@ -4,7 +4,7 @@ const router = express.Router();
 
 const prisma = new PrismaClient();
 
-router.post("/", async (req, res) => {
+router.put("/", async (req, res) => {
     const { teacher_id, student_id, grade } = req.body;
 
     if (!teacher_id) {
@@ -14,7 +14,7 @@ router.post("/", async (req, res) => {
     try {
         // Fetch the teacher to get their subject_id
         const teacher = await prisma.teacher.findUnique({
-            where: { user_id: parseInt(teacher_id, 10) } 
+            where: { user_id: parseInt(teacher_id, 10) }
         });
 
         if (!teacher) {
@@ -30,32 +30,25 @@ router.post("/", async (req, res) => {
             return res.status(404).json({ message: "Student not found" });
         }
 
-        // Check if a grade already exists for this student and subject
-        const existingGrade = await prisma.grade.findFirst({
+        // Update the grade entry
+        const updatedGrade = await prisma.grade.updateMany({
             where: {
                 student_id: student.id,
                 subject_id: teacher.subject_id,
                 teacher_id: teacher.id
+            },
+            data: {
+                grade: parseInt(grade, 10)
             }
         });
 
-        if (existingGrade) {
-            return res.status(400).json({ message: "You have already assigned a grade for this student" });
+        if (updatedGrade.count === 0) {
+            return res.status(404).json({ message: "Grade not found" });
         }
 
-        // Create the grade entry
-        const newGrade = await prisma.grade.create({
-            data: {
-                grade: parseInt(grade, 10),
-                student_id: student.id,
-                subject_id: teacher.subject_id,
-                teacher_id: teacher.id
-            }
-        });
-
-        res.status(201).json({ message: "Grade added successfully", grade: newGrade });
+        res.status(200).json({ message: "Grade updated successfully" });
     } catch (error) {
-        console.error("Error adding grade:", error);
+        console.error("Error updating grade:", error);
         res.status(500).json({ message: "Internal server error" });
     }
 });

@@ -3,10 +3,15 @@ const multer = require('multer');
 const { PrismaClient } = require('@prisma/client');
 const jwt = require('jsonwebtoken');
 require('dotenv').config();
+const path = require('path');
+const fs = require('fs');
 
 const prisma = new PrismaClient();
 const router = express.Router();
-const upload = multer({ dest: 'uploads/' });
+const upload = multer({ dest: path.join(__dirname, '../uploads') });
+
+// Serve static files from the 'uploads' directory
+router.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 const authenticateJWT = (req, res, next) => {
   const token = req.header('Authorization')?.split(' ')[1];
@@ -32,16 +37,31 @@ const ensureTeacher = async (req, res, next) => {
   }
 };
 
+// Verify file existence middleware
+const verifyFileExists = (req, res, next) => {
+  const filePath = path.join(__dirname, '../uploads', req.params.filename);
+  fs.access(filePath, fs.constants.F_OK, (err) => {
+    if (err) {
+      console.error(`File not found: ${filePath}`);
+      return res.status(404).json({ message: 'File not found' });
+    }
+    next();
+  });
+};
+
+// Serve specific file
+router.get('/uploads/:filename', verifyFileExists, (req, res) => {
+  const filePath = path.join(__dirname, '../uploads', req.params.filename);
+  res.sendFile(filePath);
+});
+
 // Fetch pending materials for a teacher by subject
 router.get('/pending/:teacherId/:subjectId', authenticateJWT, ensureTeacher, async (req, res) => {
   const { teacherId, subjectId } = req.params;
   const parsedTeacherId = parseInt(teacherId);
   const parsedSubjectId = parseInt(subjectId);
 
-  console.log(`Fetching pending materials for teacherId: ${parsedTeacherId}, subjectId: ${parsedSubjectId}`);
-
   try {
-    // Check if the teacher is associated with the subject
     const subjects = await prisma.subject.findMany({
       where: {
         id: parsedSubjectId,
@@ -53,14 +73,10 @@ router.get('/pending/:teacherId/:subjectId', authenticateJWT, ensureTeacher, asy
       },
     });
 
-    console.log('Fetched subjects:', subjects); // Log the subjects fetched
-
     const subjectIds = subjects.map((subject) => subject.id);
-    console.log('Subject IDs:', subjectIds); // Log the subject IDs
 
     if (subjectIds.length === 0) {
-      console.log('No subjects found for this teacher.');
-      return res.status(200).json([]); // No subjects found
+      return res.status(200).json([]);
     }
 
     const pendingMaterials = await prisma.material.findMany({
@@ -76,8 +92,6 @@ router.get('/pending/:teacherId/:subjectId', authenticateJWT, ensureTeacher, asy
       },
     });
 
-    console.log('Pending materials:', pendingMaterials); // Log the pending materials
-
     res.status(200).json(pendingMaterials);
   } catch (error) {
     console.error('Error fetching pending materials:', error);
@@ -89,30 +103,6 @@ router.get('/pending/:teacherId/:subjectId', authenticateJWT, ensureTeacher, asy
 router.get('/:subjectId/:category', authenticateJWT, async (req, res) => {
   const { subjectId, category } = req.params;
   const parsedSubjectId = parseInt(subjectId);
-
-  console.log(`Fetching materials for subjectId: ${parsedSubjectId}, category: ${category}`);
-
-  try {
-    const materials = await prisma.material.findMany({
-      where: {
-        subject_id: parsedSubjectId,
-        category: category,
-        approved: true,
-      },
-    });
-    res.status(200).json(materials);
-  } catch (error) {
-    console.error('Error fetching materials:', error);
-    res.status(500).json({ error: 'Internal server error' });
-  }
-});
-
-// Fetch approved materials by subject ID and category
-router.get('/:subjectId/:category/approved', authenticateJWT, async (req, res) => {
-  const { subjectId, category } = req.params;
-  const parsedSubjectId = parseInt(subjectId);
-
-  console.log(`Fetching approved materials for subjectId: ${parsedSubjectId}, category: ${category}`);
 
   try {
     const materials = await prisma.material.findMany({
@@ -126,6 +116,46 @@ router.get('/:subjectId/:category/approved', authenticateJWT, async (req, res) =
         subject: true,
       },
     });
+
+    // Ensure file_url is included in the response
+    materials.forEach(material => {
+      material.file_url = `${req.protocol}://${req.get('host')}/uploads/${path.basename(material.path)}`;
+    });
+
+    console.log('Fetched materials:', materials);
+
+    res.status(200).json(materials);
+  } catch (error) {
+    console.error('Error fetching materials:', error);
+    res.status(500).json({ error: 'Internal server error' });
+  }
+});
+
+// Fetch approved materials by subject ID and category
+router.get('/:subjectId/:category/approved', authenticateJWT, async (req, res) => {
+  const { subjectId, category } = req.params;
+  const parsedSubjectId = parseInt(subjectId);
+
+  try {
+    const materials = await prisma.material.findMany({
+      where: {
+        subject_id: parsedSubjectId,
+        category: category,
+        approved: true,
+      },
+      include: {
+        uploader: true,
+        subject: true,
+      },
+    });
+
+    // Ensure file_url is included in the response
+    materials.forEach(material => {
+      material.file_url = `${req.protocol}://${req.get('host')}/uploads/${path.basename(material.path)}`;
+    });
+
+    console.log('Fetched approved materials:', materials);
+
     res.status(200).json(materials);
   } catch (error) {
     console.error('Error fetching approved materials:', error);
@@ -139,13 +169,14 @@ router.post('/upload', authenticateJWT, upload.single('file'), async (req, res) 
   const file = req.file;
   const parsedSubjectId = parseInt(subject_id);
 
-  console.log(`Uploading file for subject_id: ${parsedSubjectId}, category: ${category}, file: ${file.originalname}`);
-
   try {
     const user = await prisma.user.findUnique({ where: { id: req.user.userId } });
     if (!user) {
       return res.status(404).json({ message: 'User not found' });
     }
+
+    const fileUrl = `${req.protocol}://${req.get('host')}/uploads/${file.filename}`;
+    console.log(`File URL generated: ${fileUrl}`);
 
     const material = await prisma.material.create({
       data: {
@@ -155,17 +186,17 @@ router.post('/upload', authenticateJWT, upload.single('file'), async (req, res) 
         subject_id: parsedSubjectId,
         category: category,
         uploaded_by: user.id,
-        approved: user.is_teacher, // auto approve if teacher
+        approved: user.is_teacher,
+        file_url: fileUrl,
       },
       include: {
         uploader: true,
       },
     });
 
-    console.log('Material uploaded:', material);
     res.status(201).json(material);
   } catch (error) {
-    console.error(error);
+    console.error('Error uploading material:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -183,7 +214,7 @@ router.post('/approve/:id', authenticateJWT, ensureTeacher, async (req, res) => 
 
     res.status(200).json(material);
   } catch (error) {
-    console.error(error);
+    console.error('Error approving material:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });
@@ -200,7 +231,7 @@ router.post('/deny/:id', authenticateJWT, ensureTeacher, async (req, res) => {
 
     res.status(204).send();
   } catch (error) {
-    console.error(error);
+    console.error('Error denying material:', error);
     res.status(500).json({ error: 'Internal server error' });
   }
 });

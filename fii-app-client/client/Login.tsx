@@ -6,6 +6,8 @@ import {
   TextInput,
   Alert,
   Image,
+  View,
+  TouchableOpacity,
 } from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import CustomButton from './customButton';
@@ -19,7 +21,7 @@ interface LoginProps {
     year: number | null,
     group: string | null,
     studentId: number | null,
-    subjectId: number | null, // Ensure subjectId is passed
+    subjectId: number | null,
   ) => void;
   onRegisterPress: () => void;
 }
@@ -27,6 +29,7 @@ interface LoginProps {
 const Login: React.FC<LoginProps> = ({onLoginSuccess, onRegisterPress}) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
+  const [isPasswordVisible, setIsPasswordVisible] = useState(false);
 
   const handleLogin = async () => {
     console.log('Login attempt');
@@ -60,7 +63,7 @@ const Login: React.FC<LoginProps> = ({onLoginSuccess, onRegisterPress}) => {
         year,
         group,
         studentId,
-        subjectId, // Ensure subjectId is included
+        subjectId,
         token,
       } = data;
       console.log('Login successful, received data:', data);
@@ -75,7 +78,7 @@ const Login: React.FC<LoginProps> = ({onLoginSuccess, onRegisterPress}) => {
         year,
         group,
         studentId,
-        subjectId, // Ensure subjectId is passed
+        subjectId,
       );
     } catch (error: any) {
       console.error('Login error:', error);
@@ -104,13 +107,27 @@ const Login: React.FC<LoginProps> = ({onLoginSuccess, onRegisterPress}) => {
         placeholder="Email"
         autoCapitalize="none"
       />
-      <TextInput
-        style={styles.input}
-        onChangeText={setPassword}
-        value={password}
-        placeholder="Password"
-        secureTextEntry
-      />
+      <View style={styles.passwordContainer}>
+        <TextInput
+          style={styles.passwordInput}
+          onChangeText={setPassword}
+          value={password}
+          placeholder="Password"
+          secureTextEntry={!isPasswordVisible}
+        />
+        <TouchableOpacity
+          onPress={() => setIsPasswordVisible(!isPasswordVisible)}
+          style={styles.eyeIcon}>
+          <Image
+            source={
+              isPasswordVisible
+                ? require('./assets/eye-open.png') // Add your open eye image here
+                : require('./assets/eye-closed.png') // Add your closed eye image here
+            }
+            style={styles.eyeImage}
+          />
+        </TouchableOpacity>
+      </View>
       <CustomButton title="Login" onPress={handleLogin} />
       <CustomButton title="Enroll" onPress={onRegisterPress} />
     </SafeAreaView>
@@ -141,6 +158,27 @@ const styles = StyleSheet.create({
     marginBottom: 10,
     paddingLeft: 8,
     borderRadius: 15,
+  },
+  passwordContainer: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderColor: 'gray',
+    borderWidth: 1,
+    borderRadius: 15,
+    marginBottom: 10,
+  },
+  passwordInput: {
+    flex: 1,
+    height: 40,
+    paddingLeft: 8,
+    borderRadius: 15,
+  },
+  eyeIcon: {
+    padding: 10,
+  },
+  eyeImage: {
+    width: 24,
+    height: 24,
   },
 });
 

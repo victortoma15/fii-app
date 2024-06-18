@@ -2,6 +2,7 @@ import express from 'express';
 import { PrismaClient } from '@prisma/client';
 import dotenv from 'dotenv';
 import { google } from 'googleapis';
+import path from 'path';
 
 dotenv.config();
 
@@ -14,6 +15,7 @@ const addGradeRouter = require('./routes/addGrade') as express.Router;
 const getGradesRouter = require('./routes/getGrades') as express.Router;
 const getStudentsByYearRouter = require('./routes/getStudentsByYear') as express.Router; // Add this line
 const getTeacherDetailsRouter = require('./routes/getTeacherDetails') as express.Router; // Add this line
+const updateGradeRouter = require('./routes/updateGrade') as express.Router; // Add this line
 const materialsRouter = require('./routes/materials') as express.Router;
 const subjectsRouter = require('./routes/subjects') as express.Router;
 
@@ -22,6 +24,9 @@ const app = express();
 const port = 3000;
 
 app.use(express.json());
+
+// Serve static files from the 'uploads' directory
+app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use('/login', loginRouter);
 app.use('/register', registerRouter);
@@ -32,6 +37,7 @@ app.use('/addGrade', addGradeRouter);
 app.use('/getGrades', getGradesRouter);
 app.use('/studentsByYear', getStudentsByYearRouter); // Add this line
 app.use('/teacher', getTeacherDetailsRouter); // Add this line
+app.use('/updateGrade', updateGradeRouter); // Add this line
 app.use('/materials', materialsRouter);
 app.use('/subjects', subjectsRouter);
 

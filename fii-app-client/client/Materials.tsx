@@ -2,15 +2,16 @@ import React, {useState, useEffect} from 'react';
 import {
   View,
   Text,
-  Button,
   FlatList,
   TouchableOpacity,
   Alert,
   StyleSheet,
   BackHandler,
+  Image,
 } from 'react-native';
 import DocumentPicker from 'react-native-document-picker';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import RNFetchBlob from 'rn-fetch-blob';
 
 type MaterialsProps = {
   studentId: number | null;
@@ -29,6 +30,7 @@ type Material = {
   name: string;
   category: string;
   approved: boolean;
+  file_url: string;
   uploader: {
     first_name: string;
     last_name: string;
@@ -161,7 +163,7 @@ const Materials: React.FC<MaterialsProps> = ({
       });
       formData.append('subject_id', selectedSubject?.toString() || '');
       formData.append('category', category);
-      formData.append('group', group || ''); // Pass the group information
+      formData.append('group', group || '');
 
       const token = await AsyncStorage.getItem('authToken');
       if (!token) {
@@ -193,7 +195,6 @@ const Materials: React.FC<MaterialsProps> = ({
     } catch (err) {
       const error = err as Error;
       if (DocumentPicker.isCancel(error)) {
-        // User cancelled the picker
       } else {
         console.error('Error uploading file:', error);
         Alert.alert('Error', `Failed to upload file: ${error.message}`);
@@ -203,13 +204,48 @@ const Materials: React.FC<MaterialsProps> = ({
 
   const handleViewApproved = async () => {
     if (selectedSubject && selectedCategory) {
-      console.log('Viewing approved materials...');
       if (showApproved) {
         setMaterials([]);
       } else {
         await fetchMaterials(selectedSubject, selectedCategory, true);
       }
       setShowApproved(!showApproved);
+    }
+  };
+
+  const handleDownload = async (fileUrl: string, fileName: string) => {
+    if (!fileUrl) {
+      Alert.alert('Error', 'File URL is missing');
+      return;
+    }
+
+    try {
+      console.log(`Starting download for URL: ${fileUrl}`);
+
+      const {config, fs} = RNFetchBlob;
+      const {DownloadDir} = fs.dirs;
+
+      const encodedFileUrl = encodeURI(fileUrl);
+
+      const options = {
+        fileCache: true,
+        addAndroidDownloads: {
+          useDownloadManager: true,
+          notification: true,
+          path: `${DownloadDir}/${fileName}`,
+          description: 'Downloading file.',
+        },
+      };
+
+      const res = await config(options).fetch('GET', encodedFileUrl);
+      console.log(`File downloaded to: ${res.path()}`);
+      Alert.alert('Success', `File downloaded to: ${res.path()}`);
+    } catch (error) {
+      console.error('Download failed:', error);
+      Alert.alert(
+        'Error',
+        `Failed to download file: ${(error as Error).message}`,
+      );
     }
   };
 
@@ -268,8 +304,17 @@ const Materials: React.FC<MaterialsProps> = ({
             data={materials}
             renderItem={({item}) => (
               <View style={styles.materialItem}>
-                <Text>{item.name}</Text>
-                <Text>Category: {item.category}</Text>
+                <TouchableOpacity
+                  onPress={() => handleDownload(item.file_url, item.name)}>
+                  <Image
+                    source={require('./assets/download.png')}
+                    style={styles.downloadIcon}
+                  />
+                </TouchableOpacity>
+                <View style={styles.materialTextContainer}>
+                  <Text>{item.name}</Text>
+                  <Text>Category: {item.category}</Text>
+                </View>
               </View>
             )}
             keyExtractor={item => item.id.toString()}
@@ -325,11 +370,21 @@ const styles = StyleSheet.create({
     textAlign: 'center',
   },
   materialItem: {
+    flexDirection: 'row',
+    alignItems: 'center',
     marginVertical: 10,
     padding: 10,
     borderWidth: 1,
     borderColor: '#ddd',
     borderRadius: 5,
+  },
+  downloadIcon: {
+    width: 22,
+    height: 22,
+    marginRight: 10,
+  },
+  materialTextContainer: {
+    flex: 1,
   },
 });
 

@@ -120,14 +120,16 @@ const Dashboard: React.FC<DashboardProps> = ({
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity style={styles.logoutButton} onPress={handleLogoutPress}>
-        <Image
-          style={styles.logoutIcon}
-          source={require('./assets/logout.png')}
-        />
-      </TouchableOpacity>
       {view === 'dashboard' ? (
         <>
+          <TouchableOpacity
+            style={styles.logoutButton}
+            onPress={handleLogoutPress}>
+            <Image
+              style={styles.logoutIcon}
+              source={require('./assets/logout.png')}
+            />
+          </TouchableOpacity>
           <Image style={styles.image} source={require('./assets/fii.png')} />
           <Text style={styles.text}>
             Welcome to your FII account, {firstName}!
