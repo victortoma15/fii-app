@@ -242,7 +242,6 @@ const TeacherMaterials: React.FC<TeacherMaterialsProps> = ({
                 Uploaded by: {item.uploader.first_name}{' '}
                 {item.uploader.last_name}
               </Text>
-              <Text>Group: {item.uploader.group}</Text>
               <Text>Subject: {item.subject.name}</Text>
               <Button title="Approve" onPress={() => handleApprove(item.id)} />
               <Button title="Deny" onPress={() => handleDeny(item.id)} />

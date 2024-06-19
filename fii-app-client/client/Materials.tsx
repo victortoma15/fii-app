@@ -294,9 +294,7 @@ const Materials: React.FC<MaterialsProps> = ({
               style={styles.actionButton}
               onPress={handleViewApproved}>
               <Text style={styles.buttonText}>
-                {showApproved
-                  ? 'Hide Approved Materials'
-                  : 'View Approved Materials'}
+                {showApproved ? 'Hide Materials' : 'View Materials'}
               </Text>
             </TouchableOpacity>
           </View>

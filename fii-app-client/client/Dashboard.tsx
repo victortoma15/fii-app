@@ -13,6 +13,7 @@ import Catalog from './Catalog';
 import Classbook from './Classbook';
 import Materials from './Materials';
 import TeacherMaterials from './TeacherMaterials';
+import Profile from './Profile'; // New import
 
 type DashboardProps = {
   firstName: string;
@@ -21,9 +22,9 @@ type DashboardProps = {
   role: string;
   year: number | null;
   group: string | null;
-  studentId: number | null; // Added studentId
+  studentId: number | null;
   onLogout: () => void;
-  subjectId: number | null; // Added subjectId
+  subjectId: number | null;
 };
 
 const Dashboard: React.FC<DashboardProps> = ({
@@ -33,9 +34,9 @@ const Dashboard: React.FC<DashboardProps> = ({
   role,
   year,
   group,
-  studentId, // Added studentId
+  studentId,
   onLogout,
-  subjectId, // Added subjectId
+  subjectId,
 }) => {
   const [view, setView] = useState<
     | 'dashboard'
@@ -44,6 +45,7 @@ const Dashboard: React.FC<DashboardProps> = ({
     | 'classbook'
     | 'materials'
     | 'teacherMaterials'
+    | 'profile' // New view
   >('dashboard');
 
   useEffect(() => {
@@ -123,6 +125,14 @@ const Dashboard: React.FC<DashboardProps> = ({
       {view === 'dashboard' ? (
         <>
           <TouchableOpacity
+            style={styles.profileButton}
+            onPress={() => setView('profile')}>
+            <Image
+              style={styles.profileIcon}
+              source={require('./assets/profile.png')}
+            />
+          </TouchableOpacity>
+          <TouchableOpacity
             style={styles.logoutButton}
             onPress={handleLogoutPress}>
             <Image
@@ -177,7 +187,7 @@ const Dashboard: React.FC<DashboardProps> = ({
         <Classbook
           visible={true}
           onClose={() => setView('dashboard')}
-          studentId={studentId!} // Pass correct studentId
+          studentId={studentId!}
           studentName={`${firstName} ${lastName}`}
           year={year!}
           group={group!}
@@ -189,8 +199,13 @@ const Dashboard: React.FC<DashboardProps> = ({
           group={group}
           subjectId={subjectId}
         />
-      ) : (
+      ) : view === 'teacherMaterials' ? (
         <TeacherMaterials teacherId={teacherId} subjectId={subjectId} />
+      ) : (
+        <Profile
+          userId={studentId || teacherId!}
+          onClose={() => setView('dashboard')}
+        />
       )}
     </View>
   );
@@ -201,6 +216,16 @@ const styles = StyleSheet.create({
     flex: 1,
     justifyContent: 'center',
     alignItems: 'center',
+  },
+  profileButton: {
+    position: 'absolute',
+    top: 40,
+    left: 20,
+    zIndex: 1,
+  },
+  profileIcon: {
+    width: 30,
+    height: 30,
   },
   logoutButton: {
     position: 'absolute',

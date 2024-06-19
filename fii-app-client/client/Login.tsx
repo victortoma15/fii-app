@@ -22,6 +22,7 @@ interface LoginProps {
     group: string | null,
     studentId: number | null,
     subjectId: number | null,
+    token: string, // Include the token parameter
   ) => void;
   onRegisterPress: () => void;
 }
@@ -79,6 +80,7 @@ const Login: React.FC<LoginProps> = ({onLoginSuccess, onRegisterPress}) => {
         group,
         studentId,
         subjectId,
+        token, // Pass the token to handleLoginSuccess
       );
     } catch (error: any) {
       console.error('Login error:', error);
@@ -121,8 +123,8 @@ const Login: React.FC<LoginProps> = ({onLoginSuccess, onRegisterPress}) => {
           <Image
             source={
               isPasswordVisible
-                ? require('./assets/eye-open.png') // Add your open eye image here
-                : require('./assets/eye-closed.png') // Add your closed eye image here
+                ? require('./assets/eye-open.png')
+                : require('./assets/eye-closed.png')
             }
             style={styles.eyeImage}
           />

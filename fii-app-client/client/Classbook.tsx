@@ -115,7 +115,6 @@ const Classbook: React.FC<ClassbookProps> = ({
           ))}
         </View>
         {selectedSubject !== null && renderGradeDetails(selectedSubject)}
-        <Button title="Close" onPress={onClose} />
       </View>
     </Modal>
   );

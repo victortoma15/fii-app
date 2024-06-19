@@ -1,3 +1,4 @@
+// App.tsx
 import React, {useState} from 'react';
 import {SafeAreaView, StyleSheet} from 'react-native';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
@@ -15,15 +16,14 @@ GoogleSignin.configure({
 function App(): React.JSX.Element {
   const [isLoggedIn, setIsLoggedIn] = useState(false);
   const [isRegistered, setIsRegistered] = useState(false);
-  const [isRegistrationComplete, setIsRegistrationComplete] = useState(false);
   const [userFirstName, setUserFirstName] = useState('');
   const [userLastName, setUserLastName] = useState('');
   const [studentId, setStudentId] = useState<number | null>(null);
   const [teacherId, setTeacherId] = useState<number | null>(null);
-  const [subjectId, setSubjectId] = useState<number | null>(null);
   const [role, setRole] = useState<string>('');
   const [year, setYear] = useState<number | null>(null);
   const [group, setGroup] = useState<string | null>(null);
+  const [subjectId, setSubjectId] = useState<number | null>(null); // Add the subjectId property here
 
   const handleLoginSuccess = (
     firstName: string,
@@ -43,7 +43,7 @@ function App(): React.JSX.Element {
     setRole(role);
     setYear(year);
     setGroup(group);
-    setSubjectId(subjectId);
+    setSubjectId(subjectId); // Add the subjectId property here
   };
 
   const handleRegisterPress = () => {
@@ -52,7 +52,6 @@ function App(): React.JSX.Element {
 
   const handleRegistrationSuccess = () => {
     setIsRegistered(false);
-    setIsRegistrationComplete(true);
   };
 
   const handleLogout = () => {
@@ -64,7 +63,6 @@ function App(): React.JSX.Element {
     setYear(null);
     setGroup(null);
     setStudentId(null);
-    setSubjectId(null);
   };
 
   return (
@@ -88,7 +86,7 @@ function App(): React.JSX.Element {
           year={year}
           group={group}
           onLogout={handleLogout}
-          subjectId={subjectId}
+          subjectId={subjectId} // Add the subjectId property here
         />
       )}
     </SafeAreaView>
