@@ -1,4 +1,3 @@
-// App.tsx
 import React, {useState} from 'react';
 import {SafeAreaView, StyleSheet} from 'react-native';
 import {GoogleSignin} from '@react-native-google-signin/google-signin';
@@ -7,8 +6,7 @@ import Register from './Register';
 import Dashboard from './Dashboard';
 
 GoogleSignin.configure({
-  webClientId:
-    '201716262857-v92c4r7f2bc9t9dv81r8lt4p3q1g9k4e.apps.googleusercontent.com',
+  webClientId: 'your-web-client-id',
   offlineAccess: true,
   scopes: ['https://www.googleapis.com/auth/calendar'],
 });
@@ -23,7 +21,8 @@ function App(): React.JSX.Element {
   const [role, setRole] = useState<string>('');
   const [year, setYear] = useState<number | null>(null);
   const [group, setGroup] = useState<string | null>(null);
-  const [subjectId, setSubjectId] = useState<number | null>(null); // Add the subjectId property here
+  const [subjectId, setSubjectId] = useState<number | null>(null);
+  const [subjectYear, setSubjectYear] = useState<number | null>(null); // Add subjectYear
 
   const handleLoginSuccess = (
     firstName: string,
@@ -34,6 +33,8 @@ function App(): React.JSX.Element {
     group: string | null,
     studentId: number | null,
     subjectId: number | null,
+    subjectYear: number | null, // Add subjectYear parameter
+    token: string,
   ) => {
     setIsLoggedIn(true);
     setUserFirstName(firstName);
@@ -43,7 +44,8 @@ function App(): React.JSX.Element {
     setRole(role);
     setYear(year);
     setGroup(group);
-    setSubjectId(subjectId); // Add the subjectId property here
+    setSubjectId(subjectId);
+    setSubjectYear(subjectYear); // Set subjectYear
   };
 
   const handleRegisterPress = () => {
@@ -63,6 +65,8 @@ function App(): React.JSX.Element {
     setYear(null);
     setGroup(null);
     setStudentId(null);
+    setSubjectId(null);
+    setSubjectYear(null); // Clear subjectYear
   };
 
   return (
@@ -86,7 +90,8 @@ function App(): React.JSX.Element {
           year={year}
           group={group}
           onLogout={handleLogout}
-          subjectId={subjectId} // Add the subjectId property here
+          subjectId={subjectId}
+          subjectYear={subjectYear} // Pass subjectYear to Dashboard
         />
       )}
     </SafeAreaView>

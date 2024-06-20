@@ -8,12 +8,13 @@ import {
   Alert,
   BackHandler,
 } from 'react-native';
-import Timetable from './Timetable';
+import TeacherSchedule from './TeacherSchedule';
 import Catalog from './Catalog';
 import Classbook from './Classbook';
 import Materials from './Materials';
 import TeacherMaterials from './TeacherMaterials';
-import Profile from './Profile'; // New import
+import Profile from './Profile';
+import StudentSchedule from './StudentSchedule';
 
 type DashboardProps = {
   firstName: string;
@@ -25,6 +26,7 @@ type DashboardProps = {
   studentId: number | null;
   onLogout: () => void;
   subjectId: number | null;
+  subjectYear: number | null; // Add subjectYear to props
 };
 
 const Dashboard: React.FC<DashboardProps> = ({
@@ -37,6 +39,7 @@ const Dashboard: React.FC<DashboardProps> = ({
   studentId,
   onLogout,
   subjectId,
+  subjectYear,
 }) => {
   const [view, setView] = useState<
     | 'dashboard'
@@ -45,8 +48,11 @@ const Dashboard: React.FC<DashboardProps> = ({
     | 'classbook'
     | 'materials'
     | 'teacherMaterials'
-    | 'profile' // New view
+    | 'profile'
+    | 'teacherSchedule'
+    | 'studentSchedule'
   >('dashboard');
+  const [loading, setLoading] = useState<boolean>(false);
 
   useEffect(() => {
     const backAction = () => {
@@ -80,6 +86,16 @@ const Dashboard: React.FC<DashboardProps> = ({
       setView('teacherMaterials');
     } else {
       setView('materials');
+    }
+  };
+
+  const handleTimetablePress = () => {
+    if (role === 'teacher') {
+      setView('teacherSchedule');
+    } else if (role === 'student') {
+      setView('studentSchedule');
+    } else {
+      Alert.alert('Access Denied', 'Unauthorized access.');
     }
   };
 
@@ -155,7 +171,7 @@ const Dashboard: React.FC<DashboardProps> = ({
             </TouchableOpacity>
             <TouchableOpacity
               style={styles.button}
-              onPress={() => setView('timetable')}>
+              onPress={handleTimetablePress}>
               <Image
                 style={styles.buttonIcon}
                 source={require('./assets/timetable.png')}
@@ -167,12 +183,6 @@ const Dashboard: React.FC<DashboardProps> = ({
               <Image
                 style={styles.buttonIcon}
                 source={require('./assets/materials.png')}
-              />
-            </TouchableOpacity>
-            <TouchableOpacity style={styles.button}>
-              <Image
-                style={styles.buttonIcon}
-                source={require('./assets/chat.png')}
               />
             </TouchableOpacity>
           </View>
@@ -201,6 +211,18 @@ const Dashboard: React.FC<DashboardProps> = ({
         />
       ) : view === 'teacherMaterials' ? (
         <TeacherMaterials teacherId={teacherId} subjectId={subjectId} />
+      ) : view === 'teacherSchedule' ? (
+        subjectYear !== null ? (
+          <TeacherSchedule
+            teacherId={teacherId!}
+            subjectId={subjectId!}
+            subjectYear={subjectYear!}
+          />
+        ) : (
+          <Text>Error loading schedule</Text>
+        )
+      ) : view === 'studentSchedule' ? (
+        <StudentSchedule year={year!} />
       ) : (
         <Profile
           userId={studentId || teacherId!}

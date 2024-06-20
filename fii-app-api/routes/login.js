@@ -34,15 +34,19 @@ router.post("/", async (req, res) => {
         const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
         console.log('Token generated for user:', user.id);
 
-        // Fetch the subject ID for the teacher
+        // Fetch the subject ID and teacher ID for the teacher
         let subjectId = null;
+        let subjectYear = null;
+        let teacherId = null;
         if (user.is_teacher) {
             const teacher = await prisma.teacher.findUnique({
                 where: { user_id: user.id },
-                select: { subject_id: true }
+                include: { subject: true }
             });
             if (teacher) {
                 subjectId = teacher.subject_id;
+                subjectYear = teacher.subject.year; // Get the subject year
+                teacherId = teacher.id; // Get the teacher id
             }
         }
 
@@ -51,12 +55,13 @@ router.post("/", async (req, res) => {
             firstName: user.first_name,
             lastName: user.last_name,
             fullName: `${user.first_name} ${user.last_name}`,
-            teacherId: user.is_teacher ? user.id : null,
+            teacherId: user.is_teacher ? teacherId : null, // Use the correct teacher id
             studentId: user.Student ? user.Student.id : null, // Ensure studentId is included
             role: user.is_teacher ? 'teacher' : 'student',
             year: user.Student ? user.Student.year : null,
             group: user.Student ? user.Student.group : null,
-            subjectId // Include subject ID for the teacher
+            subjectId, // Include subject ID for the teacher
+            subjectYear // Include subject year for the teacher
         });
     } catch (error) {
         console.error("Error logging in:", error);

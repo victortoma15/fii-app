@@ -22,7 +22,8 @@ interface LoginProps {
     group: string | null,
     studentId: number | null,
     subjectId: number | null,
-    token: string, // Include the token parameter
+    subjectYear: number | null, // Add subjectYear to the parameters
+    token: string,
   ) => void;
   onRegisterPress: () => void;
 }
@@ -65,6 +66,7 @@ const Login: React.FC<LoginProps> = ({onLoginSuccess, onRegisterPress}) => {
         group,
         studentId,
         subjectId,
+        subjectYear, // Extract subjectYear from the response data
         token,
       } = data;
       console.log('Login successful, received data:', data);
@@ -80,7 +82,8 @@ const Login: React.FC<LoginProps> = ({onLoginSuccess, onRegisterPress}) => {
         group,
         studentId,
         subjectId,
-        token, // Pass the token to handleLoginSuccess
+        subjectYear, // Pass subjectYear to onLoginSuccess
+        token,
       );
     } catch (error: any) {
       console.error('Login error:', error);

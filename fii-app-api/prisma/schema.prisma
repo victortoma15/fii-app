@@ -31,14 +31,15 @@ model Student {
 }
 
 model Teacher {
-  id         Int     @id @default(autoincrement())
-  user_id    Int     @unique
-  teacher_id Int     @unique
-  user       User    @relation(fields: [user_id], references: [id])
+  id         Int        @id @default(autoincrement())
+  user_id    Int        @unique
+  teacher_id Int        @unique
+  user       User       @relation(fields: [user_id], references: [id])
   subject_id Int
   degree     String
-  subject    Subject @relation(fields: [subject_id], references: [id], name: "TeacherSubjects")
+  subject    Subject    @relation(fields: [subject_id], references: [id], name: "TeacherSubjects")
   grades     Grade[]
+  schedules  Schedule[]
 }
 
 model Subject {
@@ -51,6 +52,7 @@ model Subject {
   students   StudentSubject[]
   grades     Grade[]
   Material   Material[]
+  schedules  Schedule[]
 }
 
 model StudentSubject {
@@ -90,4 +92,17 @@ model Material {
 
   subject  Subject @relation(fields: [subject_id], references: [id])
   uploader User    @relation(fields: [uploaded_by], references: [id])
+}
+
+model Schedule {
+  id         Int    @id @default(autoincrement())
+  day        String
+  start_time String
+  end_time   String
+  subject_id Int
+  teacher_id Int
+  year       Int
+
+  subject Subject @relation(fields: [subject_id], references: [id])
+  teacher Teacher @relation(fields: [teacher_id], references: [id])
 }

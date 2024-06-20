@@ -54,7 +54,7 @@ const Catalog: React.FC<CatalogProps> = ({visible, onClose, teacherId}) => {
 
       fetchStudents();
     }
-  }, [visible]);
+  }, [visible, teacherId]);
 
   const handleAddGrade = async () => {
     try {

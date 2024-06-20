@@ -10,7 +10,7 @@ router.get("/:teacherId", async (req, res) => {
     try {
         // Fetch the teacher and their subject details
         const teacher = await prisma.teacher.findUnique({
-            where: { user_id: parseInt(teacherId, 10) },
+            where: { id: parseInt(teacherId, 10) }, // Changed from user_id to id
             include: {
                 subject: true
             }

@@ -19,6 +19,7 @@ const updateGradeRouter = require('./routes/updateGrade') as express.Router; // 
 const materialsRouter = require('./routes/materials') as express.Router;
 const subjectsRouter = require('./routes/subjects') as express.Router;
 const profileRouter = require('./routes/getUserDetails') as express.Router; // New line
+const scheduleRouter = require('./routes/schedule') as express.Router;
 
 const prisma = new PrismaClient();
 const app = express();
@@ -42,6 +43,7 @@ app.use('/updateGrade', updateGradeRouter); // Add this line
 app.use('/materials', materialsRouter);
 app.use('/subjects', subjectsRouter);
 app.use('/users', profileRouter); // New line
+app.use('/schedule', scheduleRouter);
 
 app.use((req, res, next) => {
   console.log(`${req.method} ${req.path}`);
