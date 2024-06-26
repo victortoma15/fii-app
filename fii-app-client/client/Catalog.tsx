@@ -198,11 +198,6 @@ const Catalog: React.FC<CatalogProps> = ({visible, onClose, teacherId}) => {
           ) : (
             <Button title="Add Grade" onPress={handleAddGrade} />
           )}
-          <Button
-            title="Cancel"
-            onPress={() => setIsModalVisible(false)}
-            color="red"
-          />
         </View>
       </Modal>
     </Modal>

@@ -14,7 +14,7 @@ router.post("/", async (req, res) => {
     try {
         // Fetch the teacher to get their subject_id
         const teacher = await prisma.teacher.findUnique({
-            where: { user_id: parseInt(teacher_id, 10) } 
+            where: { id: parseInt(teacher_id, 10) } 
         });
 
         if (!teacher) {

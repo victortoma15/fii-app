@@ -62,28 +62,18 @@ router.get('/pending/:teacherId/:subjectId', authenticateJWT, ensureTeacher, asy
   const parsedSubjectId = parseInt(subjectId);
 
   try {
-    const subjects = await prisma.subject.findMany({
-      where: {
-        id: parsedSubjectId,
-        teachers: {
-          some: {
-            user_id: parsedTeacherId,
-          },
-        },
-      },
+    const teacher = await prisma.teacher.findUnique({
+      where: { id: parsedTeacherId },
+      include: { subject: true }
     });
 
-    const subjectIds = subjects.map((subject) => subject.id);
-
-    if (subjectIds.length === 0) {
-      return res.status(200).json([]);
+    if (!teacher) {
+      return res.status(404).json({ message: 'Teacher not found' });
     }
 
     const pendingMaterials = await prisma.material.findMany({
       where: {
-        subject_id: {
-          in: subjectIds,
-        },
+        subject_id: parsedSubjectId,
         approved: false,
       },
       include: {
