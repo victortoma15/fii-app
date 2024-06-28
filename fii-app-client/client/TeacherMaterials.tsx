@@ -204,7 +204,6 @@ const TeacherMaterials: React.FC<TeacherMaterialsProps> = ({
     } catch (err) {
       const error = err as Error;
       if (DocumentPicker.isCancel(error)) {
-        // User cancelled the picker
       } else {
         console.error('Error uploading file:', error);
         Alert.alert('Error', `Failed to upload file: ${error.message}`);

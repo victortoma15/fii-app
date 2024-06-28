@@ -22,7 +22,7 @@ function App(): React.JSX.Element {
   const [year, setYear] = useState<number | null>(null);
   const [group, setGroup] = useState<string | null>(null);
   const [subjectId, setSubjectId] = useState<number | null>(null);
-  const [subjectYear, setSubjectYear] = useState<number | null>(null); // Add subjectYear
+  const [subjectYear, setSubjectYear] = useState<number | null>(null);
 
   const handleLoginSuccess = (
     firstName: string,
@@ -33,7 +33,7 @@ function App(): React.JSX.Element {
     group: string | null,
     studentId: number | null,
     subjectId: number | null,
-    subjectYear: number | null, // Add subjectYear parameter
+    subjectYear: number | null,
     token: string,
   ) => {
     setIsLoggedIn(true);
@@ -45,7 +45,7 @@ function App(): React.JSX.Element {
     setYear(year);
     setGroup(group);
     setSubjectId(subjectId);
-    setSubjectYear(subjectYear); // Set subjectYear
+    setSubjectYear(subjectYear);
   };
 
   const handleRegisterPress = () => {
@@ -66,7 +66,7 @@ function App(): React.JSX.Element {
     setGroup(null);
     setStudentId(null);
     setSubjectId(null);
-    setSubjectYear(null); // Clear subjectYear
+    setSubjectYear(null);
   };
 
   return (
@@ -91,7 +91,7 @@ function App(): React.JSX.Element {
           group={group}
           onLogout={handleLogout}
           subjectId={subjectId}
-          subjectYear={subjectYear} // Pass subjectYear to Dashboard
+          subjectYear={subjectYear}
         />
       )}
     </SafeAreaView>

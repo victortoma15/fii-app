@@ -15,7 +15,7 @@ import {
 import CustomButton from './customButton';
 
 interface RegisterProps {
-  onRegisterSuccess: () => void; // Callback for successful registration
+  onRegisterSuccess: () => void;
 }
 
 const Register: React.FC<RegisterProps> = ({onRegisterSuccess}) => {
@@ -29,7 +29,7 @@ const Register: React.FC<RegisterProps> = ({onRegisterSuccess}) => {
   const [year, setYear] = useState('');
   const [group, setGroup] = useState('');
   const [teacherId, setTeacherId] = useState('');
-  const [subjectId, setSubjectId] = useState(''); // Updated to subjectId
+  const [subjectId, setSubjectId] = useState('');
   const [degree, setDegree] = useState('');
   const [isPasswordVisible, setIsPasswordVisible] = useState(false);
   const [isConfirmPasswordVisible, setIsConfirmPasswordVisible] =
@@ -67,13 +67,13 @@ const Register: React.FC<RegisterProps> = ({onRegisterSuccess}) => {
       isTeacher,
       ...(isTeacher
         ? {
-            user_id: teacherId, // Changed from teacherId to user_id
-            subject_id: subjectId, // Changed from subject to subject_id
+            user_id: teacherId,
+            subject_id: subjectId,
             degree,
           }
         : {
-            user_id: studentId, // Changed from studentId to user_id
-            year: parseInt(year, 10), // Make sure year is a number
+            user_id: studentId,
+            year: parseInt(year, 10),
             group,
           }),
     };
@@ -94,7 +94,7 @@ const Register: React.FC<RegisterProps> = ({onRegisterSuccess}) => {
 
       const data = await response.json();
       Alert.alert('Success', data.message, [
-        {text: 'OK', onPress: onRegisterSuccess}, // This will switch to the login screen
+        {text: 'OK', onPress: onRegisterSuccess},
       ]);
     } catch (error) {
       console.error('Registration failed:', error);
@@ -143,8 +143,8 @@ const Register: React.FC<RegisterProps> = ({onRegisterSuccess}) => {
             <Image
               source={
                 isPasswordVisible
-                  ? require('./assets/eye-open.png') // Add your open eye image here
-                  : require('./assets/eye-closed.png') // Add your closed eye image here
+                  ? require('./assets/eye-open.png')
+                  : require('./assets/eye-closed.png')
               }
               style={styles.eyeImage}
             />
@@ -167,8 +167,8 @@ const Register: React.FC<RegisterProps> = ({onRegisterSuccess}) => {
             <Image
               source={
                 isConfirmPasswordVisible
-                  ? require('./assets/eye-open.png') // Add your open eye image here
-                  : require('./assets/eye-closed.png') // Add your closed eye image here
+                  ? require('./assets/eye-open.png')
+                  : require('./assets/eye-closed.png')
               }
               style={styles.eyeImage}
             />
@@ -193,7 +193,7 @@ const Register: React.FC<RegisterProps> = ({onRegisterSuccess}) => {
               style={styles.input}
               value={subjectId}
               onChangeText={setSubjectId}
-              placeholder="Subject ID" // Updated to Subject ID
+              placeholder="Subject ID"
             />
             <TextInput
               style={styles.input}

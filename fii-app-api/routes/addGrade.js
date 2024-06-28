@@ -12,7 +12,6 @@ router.post("/", async (req, res) => {
     }
 
     try {
-        // Fetch the teacher to get their subject_id
         const teacher = await prisma.teacher.findUnique({
             where: { id: parseInt(teacher_id, 10) } 
         });
@@ -21,7 +20,6 @@ router.post("/", async (req, res) => {
             return res.status(404).json({ message: "Teacher not found" });
         }
 
-        // Check if the student exists
         const student = await prisma.student.findUnique({
             where: { student_id: parseInt(student_id, 10) }
         });
@@ -30,7 +28,6 @@ router.post("/", async (req, res) => {
             return res.status(404).json({ message: "Student not found" });
         }
 
-        // Check if a grade already exists for this student and subject
         const existingGrade = await prisma.grade.findFirst({
             where: {
                 student_id: student.id,
@@ -43,7 +40,6 @@ router.post("/", async (req, res) => {
             return res.status(400).json({ message: "You have already assigned a grade for this student" });
         }
 
-        // Create the grade entry
         const newGrade = await prisma.grade.create({
             data: {
                 grade: parseInt(grade, 10),

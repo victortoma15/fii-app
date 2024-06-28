@@ -44,7 +44,7 @@ const Catalog: React.FC<CatalogProps> = ({visible, onClose, teacherId}) => {
           }
 
           const data = await response.json();
-          console.log('Fetched students:', data); // Debugging log
+          console.log('Fetched students:', data);
           setStudents(data);
         } catch (error) {
           console.error('Error fetching students:', error);

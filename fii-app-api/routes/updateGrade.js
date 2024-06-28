@@ -12,7 +12,6 @@ router.put("/", async (req, res) => {
     }
 
     try {
-        // Fetch the teacher to get their subject_id
         const teacher = await prisma.teacher.findUnique({
             where: { user_id: parseInt(teacher_id, 10) }
         });
@@ -21,7 +20,6 @@ router.put("/", async (req, res) => {
             return res.status(404).json({ message: "Teacher not found" });
         }
 
-        // Check if the student exists
         const student = await prisma.student.findUnique({
             where: { student_id: parseInt(student_id, 10) }
         });
@@ -30,7 +28,6 @@ router.put("/", async (req, res) => {
             return res.status(404).json({ message: "Student not found" });
         }
 
-        // Update the grade entry
         const updatedGrade = await prisma.grade.updateMany({
             where: {
                 student_id: student.id,

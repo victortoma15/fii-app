@@ -13,12 +13,12 @@ const gradesRouter = require('./routes/catalog') as express.Router;
 const logoutRouter = require('./routes/logout') as express.Router;
 const addGradeRouter = require('./routes/addGrade') as express.Router;
 const getGradesRouter = require('./routes/getGrades') as express.Router;
-const getStudentsByYearRouter = require('./routes/getStudentsByYear') as express.Router; // Add this line
-const getTeacherDetailsRouter = require('./routes/getTeacherDetails') as express.Router; // Add this line
-const updateGradeRouter = require('./routes/updateGrade') as express.Router; // Add this line
+const getStudentsByYearRouter = require('./routes/getStudentsByYear') as express.Router;
+const getTeacherDetailsRouter = require('./routes/getTeacherDetails') as express.Router; 
+const updateGradeRouter = require('./routes/updateGrade') as express.Router;
 const materialsRouter = require('./routes/materials') as express.Router;
 const subjectsRouter = require('./routes/subjects') as express.Router;
-const profileRouter = require('./routes/getUserDetails') as express.Router; // New line
+const profileRouter = require('./routes/getUserDetails') as express.Router; 
 const scheduleRouter = require('./routes/schedule') as express.Router;
 
 const prisma = new PrismaClient();
@@ -27,7 +27,6 @@ const port = 3000;
 
 app.use(express.json());
 
-// Serve static files from the 'uploads' directory
 app.use('/uploads', express.static(path.join(__dirname, 'uploads')));
 
 app.use('/login', loginRouter);
@@ -37,12 +36,12 @@ app.use('/catalog', gradesRouter);
 app.use('/logout', logoutRouter);
 app.use('/addGrade', addGradeRouter);
 app.use('/getGrades', getGradesRouter);
-app.use('/studentsByYear', getStudentsByYearRouter); // Add this line
-app.use('/teacher', getTeacherDetailsRouter); // Add this line
-app.use('/updateGrade', updateGradeRouter); // Add this line
+app.use('/studentsByYear', getStudentsByYearRouter);
+app.use('/teacher', getTeacherDetailsRouter);
+app.use('/updateGrade', updateGradeRouter);
 app.use('/materials', materialsRouter);
 app.use('/subjects', subjectsRouter);
-app.use('/users', profileRouter); // New line
+app.use('/users', profileRouter); 
 app.use('/schedule', scheduleRouter);
 
 app.use((req, res, next) => {

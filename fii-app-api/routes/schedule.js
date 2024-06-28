@@ -3,7 +3,6 @@ const router = express.Router();
 const { PrismaClient } = require('@prisma/client');
 const prisma = new PrismaClient();
 
-// Get subject year by subject ID
 router.get('/subject/year/:subjectId', async (req, res) => {
   const { subjectId } = req.params;
   try {
@@ -25,7 +24,7 @@ router.get('/subject/year/:subjectId', async (req, res) => {
 // Add schedule
 router.post('/add', async (req, res) => {
   const { day, start_time, end_time, subject_id, teacher_id } = req.body;
-  console.log('Add schedule request:', req.body); // Log request body
+  console.log('Add schedule request:', req.body);
   try {
     const subject = await prisma.subject.findUnique({
       where: { id: subject_id },
@@ -61,7 +60,7 @@ router.post('/add', async (req, res) => {
         end_time,
         year: subject.year,
         subject: { connect: { id: subject_id } },
-        teacher: { connect: { id: teacher_id } }, // Use correct teacher_id
+        teacher: { connect: { id: teacher_id } },
       },
     });
     res.json(schedule);
@@ -71,10 +70,9 @@ router.post('/add', async (req, res) => {
   }
 });
 
-// Get schedules by day and year
 router.get('/:day/:year', async (req, res) => {
   const { day, year } = req.params;
-  console.log('Fetch schedules request:', { day, year }); // Log request parameters
+  console.log('Fetch schedules request:', { day, year });
   const yearInt = parseInt(year, 10);
 
   try {
@@ -96,7 +94,6 @@ router.get('/:day/:year', async (req, res) => {
   }
 });
 
-// Get available intervals by day and year
 router.get('/available-intervals/:day/:year', async (req, res) => {
   const { day, year } = req.params;
   const yearInt = parseInt(year, 10);

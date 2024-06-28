@@ -10,7 +10,6 @@ const prisma = new PrismaClient();
 const router = express.Router();
 const upload = multer({ dest: path.join(__dirname, '../uploads') });
 
-// Serve static files from the 'uploads' directory
 router.use('/uploads', express.static(path.join(__dirname, '../uploads')));
 
 const authenticateJWT = (req, res, next) => {
@@ -37,7 +36,6 @@ const ensureTeacher = async (req, res, next) => {
   }
 };
 
-// Verify file existence middleware
 const verifyFileExists = (req, res, next) => {
   const filePath = path.join(__dirname, '../uploads', req.params.filename);
   fs.access(filePath, fs.constants.F_OK, (err) => {
@@ -49,13 +47,11 @@ const verifyFileExists = (req, res, next) => {
   });
 };
 
-// Serve specific file
 router.get('/uploads/:filename', verifyFileExists, (req, res) => {
   const filePath = path.join(__dirname, '../uploads', req.params.filename);
   res.sendFile(filePath);
 });
 
-// Fetch pending materials for a teacher by subject
 router.get('/pending/:teacherId/:subjectId', authenticateJWT, ensureTeacher, async (req, res) => {
   const { teacherId, subjectId } = req.params;
   const parsedTeacherId = parseInt(teacherId);
@@ -89,7 +85,6 @@ router.get('/pending/:teacherId/:subjectId', authenticateJWT, ensureTeacher, asy
   }
 });
 
-// Fetch materials by subject ID and category
 router.get('/:subjectId/:category', authenticateJWT, async (req, res) => {
   const { subjectId, category } = req.params;
   const parsedSubjectId = parseInt(subjectId);
@@ -107,7 +102,6 @@ router.get('/:subjectId/:category', authenticateJWT, async (req, res) => {
       },
     });
 
-    // Ensure file_url is included in the response
     materials.forEach(material => {
       material.file_url = `${req.protocol}://${req.get('host')}/uploads/${path.basename(material.path)}`;
     });
@@ -121,7 +115,6 @@ router.get('/:subjectId/:category', authenticateJWT, async (req, res) => {
   }
 });
 
-// Fetch approved materials by subject ID and category
 router.get('/:subjectId/:category/approved', authenticateJWT, async (req, res) => {
   const { subjectId, category } = req.params;
   const parsedSubjectId = parseInt(subjectId);
@@ -139,7 +132,6 @@ router.get('/:subjectId/:category/approved', authenticateJWT, async (req, res) =
       },
     });
 
-    // Ensure file_url is included in the response
     materials.forEach(material => {
       material.file_url = `${req.protocol}://${req.get('host')}/uploads/${path.basename(material.path)}`;
     });
@@ -153,7 +145,6 @@ router.get('/:subjectId/:category/approved', authenticateJWT, async (req, res) =
   }
 });
 
-// Upload a file
 router.post('/upload', authenticateJWT, upload.single('file'), async (req, res) => {
   const { subject_id, category } = req.body;
   const file = req.file;
@@ -191,7 +182,6 @@ router.post('/upload', authenticateJWT, upload.single('file'), async (req, res) 
   }
 });
 
-// Approve a material
 router.post('/approve/:id', authenticateJWT, ensureTeacher, async (req, res) => {
   const { id } = req.params;
   const parsedId = parseInt(id);
@@ -209,7 +199,6 @@ router.post('/approve/:id', authenticateJWT, ensureTeacher, async (req, res) => 
   }
 });
 
-// Deny a material
 router.post('/deny/:id', authenticateJWT, ensureTeacher, async (req, res) => {
   const { id } = req.params;
   const parsedId = parseInt(id);

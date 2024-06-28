@@ -8,10 +8,8 @@ router.get("/:student_id", async (req, res) => {
     const { student_id } = req.params;
 
     try {
-        // Ensure the student_id is correctly parsed as an integer
         const studentId = parseInt(student_id, 10);
 
-        // Check if studentId is a valid number
         if (isNaN(studentId)) {
             return res.status(400).json({ message: "Invalid student ID" });
         }

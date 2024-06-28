@@ -14,7 +14,7 @@ router.post("/", async (req, res) => {
     try {
         const user = await prisma.user.findUnique({
             where: { email: email.trim() },
-            include: { Student: true, Teacher: true } // Include Teacher relation
+            include: { Student: true, Teacher: true }
         });
 
         if (!user) {
@@ -34,7 +34,6 @@ router.post("/", async (req, res) => {
         const token = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, { expiresIn: '1h' });
         console.log('Token generated for user:', user.id);
 
-        // Fetch the subject ID and teacher ID for the teacher
         let subjectId = null;
         let subjectYear = null;
         let teacherId = null;
@@ -45,8 +44,8 @@ router.post("/", async (req, res) => {
             });
             if (teacher) {
                 subjectId = teacher.subject_id;
-                subjectYear = teacher.subject.year; // Get the subject year
-                teacherId = teacher.id; // Get the teacher id
+                subjectYear = teacher.subject.year;
+                teacherId = teacher.id;
             }
         }
 
@@ -55,13 +54,13 @@ router.post("/", async (req, res) => {
             firstName: user.first_name,
             lastName: user.last_name,
             fullName: `${user.first_name} ${user.last_name}`,
-            teacherId: user.is_teacher ? teacherId : null, // Use the correct teacher id
-            studentId: user.Student ? user.Student.id : null, // Ensure studentId is included
+            teacherId: user.is_teacher ? teacherId : null,
+            studentId: user.Student ? user.Student.id : null,
             role: user.is_teacher ? 'teacher' : 'student',
             year: user.Student ? user.Student.year : null,
             group: user.Student ? user.Student.group : null,
-            subjectId, // Include subject ID for the teacher
-            subjectYear // Include subject year for the teacher
+            subjectId,
+            subjectYear 
         });
     } catch (error) {
         console.error("Error logging in:", error);

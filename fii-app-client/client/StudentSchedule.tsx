@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderBottomWidth: 1,
     borderBottomColor: '#ccc',
-    width: '100%', // Stretch row to full width
+    width: '100%',
   },
   scheduleTime: {
     flex: 1,

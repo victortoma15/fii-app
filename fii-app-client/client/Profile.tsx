@@ -168,7 +168,7 @@ const Profile: React.FC<ProfileProps> = ({userId, onClose}) => {
       <Text style={styles.header}>Your Profile</Text>
       <Image
         style={styles.profileIcon}
-        source={require('./assets/profile.png')} // Replace with your profile icon path
+        source={require('./assets/profile.png')}
       />
       <View style={styles.detailsContainer}>
         {user ? (

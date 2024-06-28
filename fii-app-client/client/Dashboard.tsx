@@ -26,7 +26,7 @@ type DashboardProps = {
   studentId: number | null;
   onLogout: () => void;
   subjectId: number | null;
-  subjectYear: number | null; // Add subjectYear to props
+  subjectYear: number | null;
 };
 
 const Dashboard: React.FC<DashboardProps> = ({

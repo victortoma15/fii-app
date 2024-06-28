@@ -22,7 +22,7 @@ interface LoginProps {
     group: string | null,
     studentId: number | null,
     subjectId: number | null,
-    subjectYear: number | null, // Add subjectYear to the parameters
+    subjectYear: number | null,
     token: string,
   ) => void;
   onRegisterPress: () => void;
@@ -66,12 +66,12 @@ const Login: React.FC<LoginProps> = ({onLoginSuccess, onRegisterPress}) => {
         group,
         studentId,
         subjectId,
-        subjectYear, // Extract subjectYear from the response data
+        subjectYear,
         token,
       } = data;
       console.log('Login successful, received data:', data);
 
-      await AsyncStorage.setItem('authToken', token); // Store the token in AsyncStorage
+      await AsyncStorage.setItem('authToken', token);
 
       onLoginSuccess(
         firstName,
@@ -82,7 +82,7 @@ const Login: React.FC<LoginProps> = ({onLoginSuccess, onRegisterPress}) => {
         group,
         studentId,
         subjectId,
-        subjectYear, // Pass subjectYear to onLoginSuccess
+        subjectYear,
         token,
       );
     } catch (error: any) {

@@ -8,9 +8,8 @@ router.get("/:teacherId", async (req, res) => {
     const { teacherId } = req.params;
 
     try {
-        // Fetch the teacher and their subject details
         const teacher = await prisma.teacher.findUnique({
-            where: { id: parseInt(teacherId, 10) }, // Changed from user_id to id
+            where: { id: parseInt(teacherId, 10) },
             include: {
                 subject: true
             }
@@ -24,7 +23,6 @@ router.get("/:teacherId", async (req, res) => {
         const { id: subject_id, year } = teacher.subject;
         console.log("Found teacher:", teacher);
 
-        // Fetch all students in the same year
         const students = await prisma.student.findMany({
             where: {
                 year: year

@@ -5,9 +5,8 @@ const jwt = require('jsonwebtoken');
 
 const router = express.Router();
 const prisma = new PrismaClient();
-const secretKey = process.env.JWT_SECRET; // Use a secure key in your environment variables
+const secretKey = process.env.JWT_SECRET;
 
-// Middleware to verify token
 const verifyToken = (req, res, next) => {
   const authHeader = req.headers['authorization'];
   if (!authHeader) return res.status(403).json({ message: 'Token is required' });
@@ -25,10 +24,9 @@ const verifyToken = (req, res, next) => {
 
 router.get('/details/:user_id', verifyToken, async (req, res) => {
   const userId = req.userId;
-  console.log('Using User ID:', userId); // Log statement
+  console.log('Using User ID:', userId); 
 
   try {
-    // Fetch user details
     const user = await prisma.user.findUnique({
       where: { id: userId },
       select: {
@@ -68,7 +66,6 @@ router.get('/details/:user_id', verifyToken, async (req, res) => {
   }
 });
 
-// Update email
 router.put('/:user_id/email', verifyToken, async (req, res) => {
   const { email } = req.body;
   const userId = req.userId;
@@ -88,7 +85,6 @@ router.put('/:user_id/email', verifyToken, async (req, res) => {
   }
 });
 
-// Update password
 router.put('/:user_id/password', verifyToken, async (req, res) => {
   const { password } = req.body;
   const userId = req.userId;

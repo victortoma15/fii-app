@@ -20,7 +20,6 @@ router.post("/", async (req, res) => {
                 email: email,
                 password: hashedPassword,
                 is_teacher: isTeacher,
-                // Conditionally add Student or Teacher data
                 ...(isTeacher ? {
                     Teacher: {
                         create: {

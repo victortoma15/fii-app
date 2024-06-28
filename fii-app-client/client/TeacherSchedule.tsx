@@ -59,7 +59,7 @@ const TeacherSchedule: React.FC<TeacherScheduleProps> = ({
       teacher_id: teacherId,
     };
 
-    console.log('Adding schedule with request body:', requestBody); // Log the request body
+    console.log('Adding schedule with request body:', requestBody);
 
     try {
       const response = await fetch('http://10.0.2.2:3000/schedule/add', {

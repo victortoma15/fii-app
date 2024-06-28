@@ -7,18 +7,14 @@ const Timetable: React.FC = () => {
 
   const addEventToCalendar = async () => {
     try {
-      // Sign out the user to ensure a clean sign-in state
       await GoogleSignin.signOut();
 
-      // Sign in the user
       const userInfo = await GoogleSignin.signIn();
       console.log('User Info:', userInfo);
 
-      // Fetch the tokens after signing in
       const tokens = await GoogleSignin.getTokens();
       console.log('Tokens:', tokens);
 
-      // Send the request to create an event
       const response = await fetch(
         'http://10.0.2.2:3000/calendar/create-event',
         {
@@ -43,7 +39,6 @@ const Timetable: React.FC = () => {
         },
       );
 
-      // Handle the response
       if (!response.ok) {
         const errorText = await response.text();
         throw new Error(
